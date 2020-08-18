@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">AboveZero</string>
+    <string name="city">Salavat</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="about_text">Hello! This is a program helping to observe current weather and weather forecasts</string>
+    <string name="choose_city">Выберите город из списка или введите название нового города</string>
+    <string name="choose">выбрать</string>
+    <string name="wind_speed">Показывать скорость ветра</string>
+    <string name="pressure_show">Показывать давление</string>
+    <string name="ok">OK</string>
+    <string name="enter_city">Введите название города</string>
+    <string name="choose_mode">Выберите режим приложения</string>
+    <string name="day_mode">дневной режим</string>
+    <string name="night_mode">ночной режим</string>
+    <string name="wind_speed_example">5 м/с</string>
+    <string name="temp_example">23 °C</string>
+    <string name="hours">часы</string>
+    <string name="days">дни</string>
+    <string name="weeks">недели</string>
+    <string name="hours_example1">16.00</string>
+    <string name="hours_example2">17.00</string>
+    <string name="hours_example3">18.00</string>
+    <string name="hours_example4">19.00</string>
+    <string-array name="cities_selected">
+        <item>Нурдавлетово</item>
+        <item>Москва</item>
+        <item>Добавить…</item>
+    </string-array>
+    <string-array name="cities">
+        <item>Москва</item>
+        <item>Санкт-Петербург</item>
+        <item>Омск</item>
+        <item>Томск</item>
+        <item>Кострома</item>
+    </string-array>
+    <string-array name="wind_unit">
+        <item>м/с</item>
+        <item>км/ч</item>
+    </string-array>
+    <string-array name="pressure_unit">
+        <item>мм.рт.ст</item>
+        <item>кПа</item>
+    </string-array>
+</resources>
