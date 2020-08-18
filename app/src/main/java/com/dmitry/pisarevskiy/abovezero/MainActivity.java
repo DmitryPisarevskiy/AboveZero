@@ -17,6 +17,7 @@ import android.widget.TextView;
 import static com.dmitry.pisarevskiy.abovezero.R.menu.settings;
 
 public class MainActivity extends AppCompatActivity {
+
     Spinner spCity;
 
     @Override
