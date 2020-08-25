@@ -43,8 +43,8 @@ public final class SingleTon {
     }
 
     private SingleTon() {
-        showWindSpeed = false;
-        showPressure = false;
+        showWindSpeed = true;
+        showPressure = true;
         nightMode = false;
         pressureUnit = 0;
         windSpeedUnit = 0;

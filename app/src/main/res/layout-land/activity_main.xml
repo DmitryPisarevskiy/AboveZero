@@ -6,15 +6,188 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/tvPressure1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example1"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp2"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvWind1" />
+
+    <TextView
+        android:id="@+id/tvPressure5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example5"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp6"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp4"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure4" />
+
+    <TextView
+        android:id="@+id/tvPressure2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example2"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp3"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp1"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure1" />
+
+    <TextView
+        android:id="@+id/tvPressure7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp6"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure6" />
+
+    <TextView
+        android:id="@+id/tvPressure3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example3"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp4"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp2"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure2" />
+
+    <TextView
+        android:id="@+id/tvPressure4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example4"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp5"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp3"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure3" />
+
+    <TextView
+        android:id="@+id/tvPressure6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pressure_example6"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp7"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp5"
+        app:layout_constraintTop_toTopOf="@+id/tvPressure5" />
+
+    <TextView
+        android:id="@+id/tvWind1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example1"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp2"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTemp1" />
+
+    <TextView
+        android:id="@+id/tvWind3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example3"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp4"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp2"
+        app:layout_constraintTop_toTopOf="@+id/tvWind2" />
+
+    <TextView
+        android:id="@+id/tvWind7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp6"
+        app:layout_constraintTop_toTopOf="@+id/tvWind6" />
+
+    <TextView
+        android:id="@+id/tvWind5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example5"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp6"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp4"
+        app:layout_constraintTop_toTopOf="@+id/tvWind4" />
+
+    <TextView
+        android:id="@+id/tvWind4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example4"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp5"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp3"
+        app:layout_constraintTop_toTopOf="@+id/tvWind3" />
+
+    <TextView
+        android:id="@+id/tvWind2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example2"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp3"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp1"
+        app:layout_constraintTop_toTopOf="@+id/tvWind1" />
+
+    <TextView
+        android:id="@+id/tvWind6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wind_example6"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp7"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp5"
+        app:layout_constraintTop_toTopOf="@+id/tvWind5" />
+
     <ImageView
-        android:id="@+id/iv4"
+        android:id="@+id/iv7"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv6"
+        app:layout_constraintTop_toTopOf="@+id/iv1"
+        app:layout_constraintWidth_percent="0.10"
+        app:srcCompat="@drawable/week_rain" />
+
+    <ImageView
+        android:id="@+id/iv6"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/iv7"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv5"
+        app:layout_constraintTop_toTopOf="@+id/iv1"
+        app:layout_constraintWidth_percent="0.10"
+        app:srcCompat="@drawable/sunny" />
+
+    <ImageView
+        android:id="@+id/iv5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/iv6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/iv4"
+        app:layout_constraintTop_toTopOf="@+id/iv1"
+        app:layout_constraintWidth_percent="0.10"
+        app:srcCompat="@drawable/week_cloudly" />
+
+    <ImageView
+        android:id="@+id/iv4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/iv5"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv3"
         app:layout_constraintTop_toTopOf="@+id/iv1"
-        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintWidth_percent="0.10"
         app:srcCompat="@drawable/sunny" />
 
     <ImageView
@@ -25,7 +198,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv1"
         app:layout_constraintTop_toTopOf="@+id/iv1"
-        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintWidth_percent="0.10
+"
         app:srcCompat="@drawable/week_cloudly" />
 
     <ImageView
@@ -36,7 +210,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/iv2"
         app:layout_constraintTop_toTopOf="@+id/iv1"
-        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintWidth_percent="0.10"
         app:srcCompat="@drawable/strong_rain" />
 
     <ImageView
@@ -45,9 +219,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/iv2"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv1"
-        app:layout_constraintWidth_percent="0.15"
+        app:layout_constraintTop_toBottomOf="@+id/tvTime1"
+        app:layout_constraintWidth_percent="0.10"
         app:srcCompat="@drawable/week_rain" />
 
     <ImageView
@@ -95,47 +270,152 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv"
+        android:id="@+id/tvTemp1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/hours_example2"
-        app:layout_constraintEnd_toStartOf="@+id/tv2"
+        android:layout_marginTop="10dp"
+        android:text="@string/temp_example1"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp2"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tv1"
-        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv1" />
 
     <TextView
-        android:id="@+id/tv2"
+        android:id="@+id/tvTemp2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/hours_example3"
-        app:layout_constraintEnd_toStartOf="@+id/tv3"
+        android:text="@string/temp_example2"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp3"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tv"
-        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+        app:layout_constraintStart_toEndOf="@+id/tvTemp1"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
 
     <TextView
-        android:id="@+id/tv3"
+        android:id="@+id/tvTemp3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/hours_example4"
+        android:text="@string/temp_example3"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp2"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
+
+    <TextView
+        android:id="@+id/tvTemp4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temp_example4"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp3"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
+
+    <TextView
+        android:id="@+id/tvTemp5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temp_example5"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp4"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
+
+    <TextView
+        android:id="@+id/tvTemp6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temp_example6"
+        app:layout_constraintEnd_toStartOf="@+id/tvTemp7"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTemp5"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
+
+    <TextView
+        android:id="@+id/tvTemp7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/temp_example7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tv2"
-        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+        app:layout_constraintStart_toEndOf="@+id/tvTemp6"
+        app:layout_constraintTop_toTopOf="@+id/tvTemp1" />
 
     <TextView
-        android:id="@+id/tv1"
+        android:id="@+id/tvTime1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/hours_example1"
-        app:layout_constraintEnd_toStartOf="@+id/tv"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime2"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example2"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime1"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example3"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime2"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example4"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime5"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime3"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example5"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime6"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime4"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example6"
+        app:layout_constraintEnd_toStartOf="@+id/tvTime7"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime5"
+        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+
+    <TextView
+        android:id="@+id/tvTime7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/hours_example7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTime6"
         app:layout_constraintTop_toBottomOf="@+id/tvDays" />
 
     <TextView
@@ -174,20 +454,29 @@
 
     <TextView
         android:id="@+id/tvHours"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:text="@string/hours"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
     <View
         android:id="@+id/divider"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <Button
+        android:id="@+id/btnInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/info"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

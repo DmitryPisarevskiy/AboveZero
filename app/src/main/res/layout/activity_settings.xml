@@ -35,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/night_mode"
+            android:checked="true"
             tools:layout_editor_absoluteX="42dp"
             tools:layout_editor_absoluteY="150dp" />
     </RadioGroup>
@@ -45,12 +46,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/wind_speed"
+        android:checked="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rgMode" />
 
     <CheckBox
         android:id="@+id/cbShowPressure"
-
+        android:checked="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/pressure_show"
@@ -87,15 +89,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cbShowPressure"
         app:layout_constraintWidth_percent="0.7" />
-
-    <EditText
-        android:id="@+id/etExample"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.5"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnOk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
