@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity {
                     ft.replace(R.id.cityFrame, city);
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.commit();
-
                     switch ((int)parent.getSelectedItemId()) {
                         case 0:
                             rvAdapter.setPressures(Arrays.asList(pressNurdavletovo));
