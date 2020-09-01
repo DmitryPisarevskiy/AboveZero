@@ -169,22 +169,22 @@ public class MainActivity extends AppCompatActivity {
                             rvAdapter.setPressures(Arrays.asList(pressNurdavletovo));
                             rvAdapter.setTemperatures(Arrays.asList(tempsNurdavletovo));
                             rvAdapter.setWinds(Arrays.asList(windNurdavletovo));
-                            rvAdapter.notifyDataSetChanged();
+                            break;
                         case 1:
                             rvAdapter.setPressures(Arrays.asList(pressMoscow));
                             rvAdapter.setTemperatures(Arrays.asList(tempsMoscow));
                             rvAdapter.setWinds(Arrays.asList(windMoscow));
-                            rvAdapter.notifyDataSetChanged();
+                            break;
                         case 2:
                             rvAdapter.setPressures(Arrays.asList(pressPeter));
                             rvAdapter.setTemperatures(Arrays.asList(tempsPeter));
                             rvAdapter.setWinds(Arrays.asList(windPeter));
-                            rvAdapter.notifyDataSetChanged();
+                            break;
                         default:
                             rvAdapter.setPressures(Arrays.asList(pressNurdavletovo));
-                            rvAdapter.setTemperatures(Arrays.asList(tempsMoscow));
+                            rvAdapter.setTemperatures(Arrays.asList(tempsNurdavletovo));
                             rvAdapter.setWinds(Arrays.asList(windNurdavletovo));
-                            rvAdapter.notifyDataSetChanged();
+                            break;
                     }
                 }
             }
