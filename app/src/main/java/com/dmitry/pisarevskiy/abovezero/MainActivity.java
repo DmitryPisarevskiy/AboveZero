@@ -3,22 +3,20 @@ package com.dmitry.pisarevskiy.abovezero;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.Arrays;
 
 import static com.dmitry.pisarevskiy.abovezero.R.menu.settings;
 
@@ -58,6 +56,18 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvPressure5;
     private TextView tvPressure6;
     private TextView tvPressure7;
+
+    private final String[] tempsNurdavletovo = {"30°C","30°C", "34°C", "35°C","31°C","32°C","33°C"};
+    private final String[] tempsMoscow = {"10°C","11°C", "10°C", "8°C","7°C","6°C","10°C"};
+    private final String[] tempsPeter = {"-10°C","0°C", "5°C", "7°C","10°C","15°C","20°C"};
+
+    private final String[] pressNurdavletovo = {"105кПа","105кПа", "105кПа", "105кПа","105кПа","105кПа","105кПа"};
+    private final String[] pressMoscow = {"120кПа","125кПа", "135кПа", "145кПа","155кПа","165кПа","175кПа"};
+    private final String[] pressPeter = {"105кПа","100кПа", "95кПа", "85кПа","75кПа","65кПа","55кПа"};
+
+    private final String[] windNurdavletovo = {"0м/с","0м/с", "0м/с", "0м/с","0м/с","0м/с","0м/с"};
+    private final String[] windMoscow = {"10м/с","20м/с", "10м/с", "20м/с","10м/с","20м/с","10м/с"};
+    private final String[] windPeter = {"0м/с","5м/с", "0м/с", "5м/с","0м/с","5м/с","0м/с"};
 
 //1. Переведите ваше приложение на Фрагменты по аналогии с CityInfo.
 //2. * Приложение FragmentManager содержит ошибку, попробуйте дважды добавить один фрагмент и приложение упадет. Исправьте этот баг.
@@ -127,6 +137,11 @@ public class MainActivity extends AppCompatActivity {
         tvPressure6 = findViewById(R.id.tvPressure6);
         tvPressure7 = findViewById(R.id.tvPressure7);
 
+        final RecyclerView rvData = findViewById(R.id.rvData);
+        rvData.setLayoutManager(new LinearLayoutManager(this));
+        final RVAdapter rvAdapter = new RVAdapter(Arrays.asList(tempsNurdavletovo),Arrays.asList(pressNurdavletovo),Arrays.asList(windNurdavletovo));
+        rvData.setAdapter(rvAdapter);
+
         showPressure = true;
         showWind = true;
         pressureUnit = getResources().getStringArray(R.array.pressure_unit)[0];
@@ -149,6 +164,28 @@ public class MainActivity extends AppCompatActivity {
                     ft.replace(R.id.cityFrame, city);
                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                     ft.commit();
+                    switch ((int)parent.getSelectedItemId()) {
+                        case 0:
+                            rvAdapter.setPressures(Arrays.asList(pressNurdavletovo));
+                            rvAdapter.setTemperatures(Arrays.asList(tempsNurdavletovo));
+                            rvAdapter.setWinds(Arrays.asList(windNurdavletovo));
+                            rvAdapter.notifyDataSetChanged();
+                        case 1:
+                            rvAdapter.setPressures(Arrays.asList(pressMoscow));
+                            rvAdapter.setTemperatures(Arrays.asList(tempsMoscow));
+                            rvAdapter.setWinds(Arrays.asList(windMoscow));
+                            rvAdapter.notifyDataSetChanged();
+                        case 2:
+                            rvAdapter.setPressures(Arrays.asList(pressPeter));
+                            rvAdapter.setTemperatures(Arrays.asList(tempsPeter));
+                            rvAdapter.setWinds(Arrays.asList(windPeter));
+                            rvAdapter.notifyDataSetChanged();
+                        default:
+                            rvAdapter.setPressures(Arrays.asList(pressNurdavletovo));
+                            rvAdapter.setTemperatures(Arrays.asList(tempsMoscow));
+                            rvAdapter.setWinds(Arrays.asList(windNurdavletovo));
+                            rvAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
