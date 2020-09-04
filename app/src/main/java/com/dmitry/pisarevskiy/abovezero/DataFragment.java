@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import java.util.Arrays;
 
+
 public class DataFragment extends Fragment {
 
     private static final String ARG_TIMES = "Time";

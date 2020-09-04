@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 public class CityFragment extends Fragment {
     int currentPosition;
     String nameOfCity;

@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 import java.util.Arrays;
 
+
 public class CityActivity extends AppCompatActivity {
     protected static EditText etCity;
 

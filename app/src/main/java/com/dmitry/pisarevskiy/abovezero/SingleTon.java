@@ -3,7 +3,6 @@ package com.dmitry.pisarevskiy.abovezero;
 public final class SingleTon {
     private static SingleTon instance = null;
     private static final Object syncObj = new Object();
-
     private boolean showWindSpeed;
     private boolean showPressure;
     private boolean nightMode;
