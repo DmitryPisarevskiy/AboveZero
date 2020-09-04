@@ -22,15 +22,12 @@ public class RVAdapterCities extends RecyclerView.Adapter<RVAdapterCities.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        return new RVAdapterCities.ViewHolder(
-//                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city, parent, false)
-//        );
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city, null);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TextView tvCity = view.findViewById(R.id.tvCity);
-                CityActivity.etCity.setText(tvCity.getText());
+                CityActivity.tietCity.setText(tvCity.getText());
             }
         });
         return new ViewHolder(view);

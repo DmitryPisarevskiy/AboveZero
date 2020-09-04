@@ -17,9 +17,6 @@ import android.widget.Spinner;
 
 import static com.dmitry.pisarevskiy.abovezero.R.menu.settings;
 
-//* В погодном приложении сделайте добавление населенного пункта в RecyclerView
-
-
 public class MainActivity extends AppCompatActivity {
 
     protected static final String WIND_UNIT_TAG = "Wind unit";
@@ -120,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data == null) {
+        if (data == null || resultCode == RESULT_CANCELED)  {
             return;
         }
         switch (requestCode) {

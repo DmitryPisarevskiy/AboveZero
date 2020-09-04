@@ -12,16 +12,22 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
+
 import androidx.annotation.NonNull;
 
 
 public class SettingsActivity extends Activity {
+    public static boolean ok=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Button btnOk = findViewById(R.id.btnOk);
+        Button btnCancel = findViewById(R.id.btnCancel);
         final CheckBox showWindSpeed = findViewById(R.id.cbShowWindSpeed);
         final CheckBox showPressure = findViewById(R.id.cbShowPressure);
         final Spinner windUnit = findViewById(R.id.spWindUnit);
@@ -39,6 +45,21 @@ public class SettingsActivity extends Activity {
                 intent.putExtra(MainActivity.WIND_UNIT_TAG, String.valueOf(windUnit.getSelectedItem()));
                 intent.putExtra(MainActivity.PRESSURE_UNIT_TAG, String.valueOf(pressureUnit.getSelectedItem()));
                 setResult(MainActivity.RESULT_OK, intent);
+                Snackbar.make(v,"Вы уверены, что хотите применить настройки?",
+                        Snackbar.LENGTH_LONG).setAction("OK",new View.OnClickListener(){
+                            @Override
+                            public void onClick(View v) {
+                                finish();
+                            }
+                        }).show();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                setResult(MainActivity.RESULT_CANCELED, intent);
                 finish();
             }
         });
