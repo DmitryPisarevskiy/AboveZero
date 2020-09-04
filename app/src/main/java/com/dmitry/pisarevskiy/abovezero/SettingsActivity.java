@@ -13,7 +13,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;

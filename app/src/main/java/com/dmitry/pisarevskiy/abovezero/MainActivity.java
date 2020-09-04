@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
-
 import static com.dmitry.pisarevskiy.abovezero.R.menu.settings;
 
 public class MainActivity extends AppCompatActivity {
