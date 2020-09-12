@@ -1,7 +1,6 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,7 +20,7 @@ public class CityFragment extends Fragment {
     private String nameOfCity;
     private float temp;
     private float speed;
-    private int clouds;
+    private int image;
 
     private static final String ARG_ID = "id";
     private static final String ARG_TEMP = "temp";
@@ -56,7 +55,7 @@ public class CityFragment extends Fragment {
         outState.putFloat(ARG_TEMP, temp);
         outState.putString(ARG_NAME, nameOfCity);
         outState.putFloat(ARG_SPEED, speed);
-        outState.putInt(ARG_CLOUDS, clouds);
+        outState.putInt(ARG_CLOUDS, image);
         super.onSaveInstanceState(outState);
     }
 
@@ -68,7 +67,7 @@ public class CityFragment extends Fragment {
             temp = getArguments().getFloat(ARG_TEMP);
             nameOfCity = getArguments().getString(ARG_NAME);
             speed = getArguments().getFloat(ARG_SPEED);
-            clouds = getArguments().getInt(ARG_CLOUDS);
+            image = getArguments().getInt(ARG_CLOUDS);
         }
     }
 
@@ -90,15 +89,9 @@ public class CityFragment extends Fragment {
         TextView tvTemp = layout.findViewById(R.id.tvTemp);
         TextView tvWindSpeed = layout.findViewById(R.id.tvWindSpeed);
 
-        if (clouds<=25) {
-            imageView.setImageResource(R.drawable.sunny);
-        } else if (clouds<=50) {
-            imageView.setImageResource(R.drawable.week_cloudly);
-        } else {
-            imageView.setImageResource(R.drawable.cloudly);
-        }
-        tvTemp.setText((String.valueOf(temp)+MainActivity.degreeUnit));
-        tvWindSpeed.setText((String.valueOf(speed)+MainActivity.windUnit));
+        imageView.setImageResource(image);
+        tvTemp.setText((String.format("%.0f",temp+MainActivity.CONSTANT_FOR_KELVIN_SCALE) + MainActivity.degreeUnit));
+        tvWindSpeed.setText((String.format("%.1f",speed*MainActivity.windMultiplier) + MainActivity.windUnit));
 
         btnInfo.setOnClickListener(new View.OnClickListener() {
             @Override

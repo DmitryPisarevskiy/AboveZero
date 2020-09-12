@@ -1,5 +1,7 @@
 package com.dmitry.pisarevskiy.abovezero.weather;
 
+import com.dmitry.pisarevskiy.abovezero.R;
+
 public class WeatherSample {
     private Weather[] weather;
     private Main main;
@@ -14,17 +16,6 @@ public class WeatherSample {
     public String getDt_txt() {
         return dt_txt;
     }
-//    private Sys sys;
-//    private String name;
-//    private int id;
-
-//    public void setId(int id) {
-//        this.id = id;
-//    }
-
-//    public int getId() {
-//        return id;
-//    }
 
     public void setWeather(Weather[] weather) {
         this.weather = weather;
@@ -42,14 +33,6 @@ public class WeatherSample {
         this.clouds = clouds;
     }
 
-//    public void setSys(Sys sys) {
-//        this.sys = sys;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-
     public Weather[] getWeather() {
         return weather;
     }
@@ -66,11 +49,33 @@ public class WeatherSample {
         return clouds;
     }
 
-//    public Sys getSys() {
-//        return sys;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
+    public int getImage() {
+        int img;
+        switch (getWeather()[0].getMain()){
+            case "Drizzle":
+                img = R.drawable.week_rain;
+                break;
+            case "Rain":
+                if (getWeather()[0].getDescription().equals("light rain") ||
+                        getWeather()[0].getDescription().equals("moderate rain")) {
+                    img =R.drawable.week_rain;
+                } else {
+                    img =R.drawable.strong_rain;
+                }
+                break;
+            case "Clouds":
+                if (getWeather()[0].getDescription().equals("overcast clouds")) {
+                    img=R.drawable.cloudly;
+                } else {
+                    img=R.drawable.week_cloudly;
+                }
+                break;
+            case "Clear":
+                img=R.drawable.sunny;
+                break;
+            default:
+                img = R.drawable.cloudly;
+        }
+        return img;
+    }
 }

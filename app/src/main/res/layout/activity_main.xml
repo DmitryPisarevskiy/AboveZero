@@ -105,22 +105,30 @@
         app:layout_constraintTop_toBottomOf="@+id/spCity">
     </FrameLayout>
 
+<HorizontalScrollView
+    android:id="@+id/hsvData"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@+id/tvHours"
+    app:layout_constraintStart_toStartOf="parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvData"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/tvHours"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="282dp" />
+</HorizontalScrollView>
+
 
     <FrameLayout
         android:id="@+id/flData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_height="100dp"
-        app:layout_constraintTop_toBottomOf="@+id/rvData"
+        app:layout_constraintTop_toBottomOf="@+id/hsvData"
         app:layout_constraintStart_toStartOf="parent"/>
 
 

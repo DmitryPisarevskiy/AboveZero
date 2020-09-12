@@ -67,7 +67,7 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
     public int getItemCount() {
         if (temperatures == null) {
             return 0;
-        };
+        }
         return temperatures.length;
     }
 
@@ -101,8 +101,8 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
             tvTime.setText(time);
             imgCloudiness.setImageResource(image);
             tvTemperature.setText((String.format("%.0f",temperature+MainActivity.CONSTANT_FOR_KELVIN_SCALE) + MainActivity.degreeUnit));
-            tvWind.setText((String.format("%.1f",wind) + MainActivity.windUnit));
-            tvPressure.setText((String.format("%.0f",pressure*MainActivity.MULTIPLIER_FOR_PRESSURE) + MainActivity.pressureUnit));
+            tvWind.setText((String.format("%.1f",wind*MainActivity.windMultiplier) + MainActivity.windUnit));
+            tvPressure.setText((String.format("%.0f",pressure*MainActivity.pressureMultiplier) + MainActivity.pressureUnit));
         }
     }
 }
