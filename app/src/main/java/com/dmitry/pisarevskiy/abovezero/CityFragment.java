@@ -20,7 +20,7 @@ public class CityFragment extends Fragment {
     private int id;
     private String nameOfCity;
     private float temp;
-    private int speed;
+    private float speed;
     private int clouds;
 
     private static final String ARG_ID = "id";
@@ -31,13 +31,13 @@ public class CityFragment extends Fragment {
 
     public CityFragment() {}
 
-    public static CityFragment newInstance(int id, String name, float temp, int speed, int clouds) {
+    public static CityFragment newInstance(int id, String name, float temp, float speed, int clouds) {
         CityFragment fragment = new CityFragment();
         Bundle args = new Bundle();
         args.putFloat(ARG_ID, id);
         args.putFloat(ARG_TEMP, temp);
         args.putString(ARG_NAME, name);
-        args.putInt(ARG_SPEED, speed);
+        args.putFloat(ARG_SPEED, speed);
         args.putInt(ARG_CLOUDS, clouds);
         fragment.setArguments(args);
         return fragment;
@@ -55,7 +55,7 @@ public class CityFragment extends Fragment {
         outState.putInt(ARG_ID, id);
         outState.putFloat(ARG_TEMP, temp);
         outState.putString(ARG_NAME, nameOfCity);
-        outState.putInt(ARG_SPEED, speed);
+        outState.putFloat(ARG_SPEED, speed);
         outState.putInt(ARG_CLOUDS, clouds);
         super.onSaveInstanceState(outState);
     }
@@ -67,7 +67,7 @@ public class CityFragment extends Fragment {
             id = getArguments().getInt(ARG_ID);
             temp = getArguments().getFloat(ARG_TEMP);
             nameOfCity = getArguments().getString(ARG_NAME);
-            speed = getArguments().getInt(ARG_SPEED);
+            speed = getArguments().getFloat(ARG_SPEED);
             clouds = getArguments().getInt(ARG_CLOUDS);
         }
     }

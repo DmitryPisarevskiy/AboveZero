@@ -19,26 +19,31 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 
-import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
+import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import static com.dmitry.pisarevskiy.abovezero.R.menu.settings;
-
 public class MainActivity extends AppCompatActivity {
 
+    public static final float MULTIPLIER_FOR_PRESSURE = 0.1f;
+    public static final float CONSTANT_FOR_KELVIN_SCALE = -273.15f;
     protected static final String WIND_UNIT_TAG = "Wind unit";
     protected static final String PRESSURE_UNIT_TAG = "Pressure unit";
     protected static final String WIND_SHOW_TAG = "Show wind";
     protected static final String PRESSURE_SHOW_TAG = "Pressure show";
     protected static final String NEWCITY_TAG = "New city";
-    protected static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?id=";
+    protected static final String CURRENT_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?id=";
+    protected static final String FORECAST_WEATHER_URL = "https://api.openweathermap.org/data/2.5/forecast?id=";
+    protected static final int NUM_OF_DATA_ITEMS=7;
     private static final int REQUEST_SETTINGS_CODE = 1;
     private static final int REQUEST_NEWCITY_CODE = 2;
     private static final String FAIL_NETWORK_TAG ="fail network" ;
@@ -64,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
         put("Нурдавлетово", "479561");
         put("Москва", "524894");
         put("Санкт-Петербург", "498817");
+//        put("Самара", "499099");
+//        put("Омск", "1496153");
+//        put("Томск", "1489425");
+//        put("Кострома", "543878");
     }};
 
     private final int[][] IMG_FORECAST = {
@@ -78,45 +87,45 @@ public class MainActivity extends AppCompatActivity {
             {R.drawable.cloudly,R.drawable.strong_rain,R.drawable.strong_rain, R.drawable.strong_rain, R.drawable.strong_rain,R.drawable.cloudly,R.drawable.strong_rain},
     };
 
-    private final String[][] TEMPERATURES_FORECAST = {
-            {"30","30", "34", "35","31","32","33"},
-            {"10","11", "10", "8","7","6","10"},
-            {"-10","0", "5", "7","10","15","20"}
+    private final float[][] TEMPERATURES_FORECAST = {
+            {30,30, 34, 35,31,32,33},
+            {10,11, 10, 8,7,6,10},
+            {-10,0, 5, 7,10,15,20}
     };
 
-    private final String[][] PRESSURES_FORECAST = {
-            {"105","105", "105", "105","105","105","105"},
-            {"120","125", "135", "145","155","165","175"},
-            {"105","100", "95", "85","75","65","55"}
+    private final float[][] PRESSURES_FORECAST = {
+            {105,105, 105, 105,105,105,105},
+            {120,125, 135, 145,155,165,175},
+            {105,100, 95, 85,75,65,55}
     };
 
-    private final String[][] WINDS_FORECAST = {
-            {"0","0", "0", "0","0","0","0"},
-            {"10","20", "10", "20","10","20","10"},
-            {"0","5", "0", "5","0","5","0"}
+    private final float[][] WINDS_FORECAST = {
+            {0,0, 0, 0,0,0,0},
+            {10,20, 10, 20,10,20,10},
+            {0,5, 0, 5,0,5,0}
     };
 
-    private final String[][] TEMPERATURES_HISTORY = {
-            {"23","24", "25", "26","27","28","29"},
-            {"3","4", "5", "6","7","8","9"},
-            {"-17","-16", "-15", "-14","-13","-12","-11"}
+    private final float[][] TEMPERATURES_HISTORY = {
+            {23,24, 25, 26,27,28,29},
+            {3,4, 5, 6,7,8,9},
+            {-17,-16, -15, -14,-13,-12,-11}
     };
 
-    private final String[][] PRESSURES_HISTORY = {
-            {"98","99", "100", "101","102","103","104"},
-            {"113","114", "115", "116","117","118","119"},
-            {"35","45", "55", "65","75кПа","85","95"}
+    private final float[][] PRESSURES_HISTORY = {
+            {98,99, 100, 101,102,103,104},
+            {113,114, 115, 116,117,118,119},
+            {35,45, 55, 65,75,85,95}
     };
 
-    private final String[][] WINDS_HISTORY = {
-            {"0","0", "0", "0","0","0","0"},
-            {"3","4", "5", "6","7","8","9"},
-            {"70","60", "50", "40","30","20","10"}
+    private final float[][] WINDS_HISTORY = {
+            {0,0, 0, 0,0,0,0},
+            {3,4, 5, 6,7,8,9},
+            {70,60, 50,40,30,20,10}
     };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(settings, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -180,48 +189,12 @@ public class MainActivity extends AppCompatActivity {
 
         spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(final AdapterView<?> parent, final View view, int position, long id) {
                 final String item = parent.getSelectedItem().toString();
                 if (item.equals("Добавить…")) {
                     startActivityForResult(new Intent(MainActivity.this, CityActivity.class), REQUEST_NEWCITY_CODE);
                     parent.setSelection(0);
                 } else {
-                    new Thread(new Runnable() {
-                        @RequiresApi(api = Build.VERSION_CODES.N)
-                        @Override
-                        public void run() {
-                            HttpURLConnection urlConnection = null;
-                            try {
-                                final URL url = new URL(WEATHER_URL + citiesID.get(item) + API_URL);
-                                final Handler handler = new Handler();
-                                urlConnection = (HttpURLConnection) url.openConnection();
-                                urlConnection.setRequestMethod("GET");
-                                urlConnection.setReadTimeout(10000);
-                                BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                                String result = in.lines().collect(Collectors.joining("\n"));
-                                Gson gson = new Gson();
-                                System.out.println(result);
-                                final WeatherRequest request = gson.fromJson(result, WeatherRequest.class );
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        refresh(request);
-                                    }
-                                });
-                            } catch (NullPointerException e) {
-                                Log.e(FAIL_NETWORK_TAG,"Не найдено города в списке ID",e);
-                                e.printStackTrace();
-                            } catch (Exception e) {
-                                Log.e(FAIL_NETWORK_TAG,"Не удалось выйти в интернет",e);
-                                e.printStackTrace();
-                            } finally {
-                                if (urlConnection!=null) {
-                                    urlConnection.disconnect();
-                                }
-                            }
-
-                        }
-                    }).start();
                     refresh();
                 }
             }
@@ -240,33 +213,68 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void refresh(WeatherRequest request) {
-        int pos = (int)spCity.getSelectedItemId()>2?0:(int)spCity.getSelectedItemId();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        CityFragment city = CityFragment.newInstance(request.getId(),request.getName(),request.getMain().getTemp(),request.getWind().getSpeed(),request.getClouds().getAll());
-        DataFragment history = DataFragment.newInstance(
-                isHistory?TIMES_HISTORY:TIMES_FORECAST,
-                isHistory?IMG_HISTORY[pos]:IMG_FORECAST[pos],
-                isHistory?TEMPERATURES_HISTORY[pos]:TEMPERATURES_FORECAST[pos],
-                isHistory?PRESSURES_HISTORY[pos]:PRESSURES_FORECAST[pos],
-                isHistory?WINDS_HISTORY[pos]:WINDS_FORECAST[pos]);
-        ft.replace(R.id.flData,history);
-        ft.replace(R.id.flCityFrame, city);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commit();
+    private void refresh() {
+        String item = spCity.getSelectedItem().toString();
+        try {
+            final Handler handler = new Handler();
+            final URL urlCurrent = new URL(CURRENT_WEATHER_URL + citiesID.get(item) + API_URL);
+            final URL urlForecast = new URL(FORECAST_WEATHER_URL + citiesID.get(item) + API_URL);
+            new Thread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void run() {
+                    HttpURLConnection urlConnection = null;
+                    try {
+                        urlConnection = (HttpURLConnection) urlCurrent.openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.setReadTimeout(10000);
+                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        String result = in.lines().collect(Collectors.joining("\n"));
+                        Gson gson = new Gson();
+                        System.out.println(result);
+                        final WeatherSample currentWeather = gson.fromJson(result, WeatherSample.class );
+                        urlConnection = (HttpURLConnection) urlForecast.openConnection();
+                        urlConnection.setRequestMethod("GET");
+                        urlConnection.setReadTimeout(10000);
+                        in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        result = in.lines().collect(Collectors.joining("\n"));
+                        final ForecastWeather forecastWeather = gson.fromJson(result, ForecastWeather.class);
+                        System.out.println(result);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                int pos = (int)spCity.getSelectedItemId()>2?0:(int)spCity.getSelectedItemId();
+                                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                                CityFragment city = CityFragment.newInstance(forecastWeather.getCity().getId(),forecastWeather.getCity().getName(),currentWeather.getMain().getTemp(),currentWeather.getWind().getSpeed(),currentWeather.getClouds().getAll());
+                                DataFragment history = DataFragment.newInstance(
+                                        isHistory?TIMES_HISTORY:TIMES_FORECAST,
+                                        isHistory?IMG_HISTORY[pos]:IMG_FORECAST[pos],
+                                        isHistory?TEMPERATURES_HISTORY[pos]:forecastWeather.getTemps(NUM_OF_DATA_ITEMS),
+                                        isHistory?PRESSURES_HISTORY[pos]:forecastWeather.getPressures(NUM_OF_DATA_ITEMS),
+                                        isHistory?WINDS_HISTORY[pos]:forecastWeather.getWinds(NUM_OF_DATA_ITEMS));
+                                ft.replace(R.id.flData,history);
+                                ft.replace(R.id.flCityFrame, city);
+                                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                                ft.commit();
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e(FAIL_NETWORK_TAG,getResources().getString(R.string.fail_network),e);
+//                        Snackbar.make(MainActivity.this, getResources().getString(R.string.fail_network), Snackbar.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    } finally {
+                        if (urlConnection!=null) {
+                            urlConnection.disconnect();
+                        }
+                    }
+
+                }
+            }).start();
+        } catch (MalformedURLException e) {
+            Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.incorrect_uri),e);
+//            Snackbar.make(parent, getResources().getString(R.string.incorrect_uri), Snackbar.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
-    private void refresh() {
-        int pos = (int)spCity.getSelectedItemId()>2?0:(int)spCity.getSelectedItemId();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        DataFragment history = DataFragment.newInstance(
-                isHistory?TIMES_HISTORY:TIMES_FORECAST,
-                isHistory?IMG_HISTORY[pos]:IMG_FORECAST[pos],
-                isHistory?TEMPERATURES_HISTORY[pos]:TEMPERATURES_FORECAST[pos],
-                isHistory?PRESSURES_HISTORY[pos]:PRESSURES_FORECAST[pos],
-                isHistory?WINDS_HISTORY[pos]:WINDS_FORECAST[pos]);
-        ft.replace(R.id.flData,history);
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.commit();
-    }
 }
