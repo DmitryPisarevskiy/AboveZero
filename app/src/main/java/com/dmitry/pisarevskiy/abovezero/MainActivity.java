@@ -1,14 +1,20 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +29,7 @@ import android.widget.Spinner;
 
 import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 
@@ -30,11 +37,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     protected static final float PRESSURE_MULTIPLIER_TO_MM_RT_ST = 760f / 1030;
     protected static final float PRESSURE_MULTIPLIER_TO_KPA = 0.1f;
@@ -63,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected static boolean showWind;
     protected static boolean showPressure;
     private static String activityState;
+    final SingleTon singleTon = SingleTon.getInstance();
 
     private Spinner spCity;
     private ArrayAdapter<String> spCityAdapter;
@@ -110,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+//        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
 
@@ -171,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.drawer_main);
+        initDrawer();
         spCity = findViewById(R.id.spCity);
         spCityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, android.R.id.text1);
         spCityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -241,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
                         in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                         result = in.lines().collect(Collectors.joining("\n"));
                         final ForecastWeather forecastWeather = gson.fromJson(result, ForecastWeather.class);
+                        forecastWeather.setRequest(urlForecast.toString());
+                        singleTon.getHistory().add(forecastWeather);
                         System.out.println(result);
                         handler.post(new Runnable() {
                             @Override
@@ -279,4 +292,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initDrawer() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        switch (id) {
+            case R.id.nav_home:
+                String url = "http://geekbrains.ru";
+                Uri uri = Uri.parse(url);
+                Intent browser = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(browser);
+                break;
+            case R.id.nav_history:
+                startActivity(new Intent(this, HistoryActivity.class));
+                break;
+            case R.id.nav_settings:
+                startActivityForResult(new Intent(this, SettingsActivity.class), REQUEST_SETTINGS_CODE);
+                break;
+            case R.id.nav_share:
+                break;
+            case R.id.nav_send:
+                break;
+        }
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }

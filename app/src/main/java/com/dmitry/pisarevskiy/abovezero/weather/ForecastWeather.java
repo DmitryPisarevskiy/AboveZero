@@ -8,6 +8,15 @@ import com.dmitry.pisarevskiy.abovezero.R;
 public class ForecastWeather {
     private WeatherSample[] list;
     private City city;
+    private String request;
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
+
+    public String getRequest() {
+        return request;
+    }
 
     public WeatherSample[] getList() {
         return list;

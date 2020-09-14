@@ -5,6 +5,8 @@
         <item name="colorPrimary">#677838</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
     <style name="WhiteTexts">
         <item name="android:textColor">@color/cardview_light_background</item>
