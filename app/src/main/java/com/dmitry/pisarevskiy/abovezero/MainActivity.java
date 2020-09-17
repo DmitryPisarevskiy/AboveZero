@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
@@ -13,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -57,11 +59,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static final String WIND_SHOW_TAG = "Show wind";
     protected static final String PRESSURE_SHOW_TAG = "Pressure show";
     protected static final String NEWCITY_TAG = "New city";
+    protected static final String HISTORY_WEATHER_URL = "https://api.openweathermap.org/data/2.5/history?id=";
     protected static final String CURRENT_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?id=";
     protected static final String FORECAST_WEATHER_URL = "https://api.openweathermap.org/data/2.5/forecast?id=";
     protected static final int NUM_OF_DATA_ITEMS = 7;
     private static final int REQUEST_SETTINGS_CODE = 1;
-    private static final int REQUEST_NEWCITY_CODE = 2;
     private static final String FAIL_NETWORK_TAG = "fail network";
     private static final String API_URL = "&appid=3f371cc26311182846ffe9eeabc50393";
     protected static String degreeUnit = "°C";
@@ -74,12 +76,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     final SingleTon singleTon = SingleTon.getInstance();
 
     private Spinner spCity;
-    private ArrayAdapter<String> spCityAdapter;
-    private SwitchCompat swForecastHistory;
-    private RecyclerView rvData;
-    private RVAdapterData rvAdapter;
+    protected ArrayAdapter<String> spCityAdapter;
+    private MySwitchView switchForecastHistory;
 
-    private final String[] TIMES_FORECAST = {"16.00", "17.00", "18.00", "19.00", "20.00", "21.00", "22.00"};
     private final String[] TIMES_HISTORY = {"09.00", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00"};
 
     private final HashMap<String, String> citiesID = new HashMap() {{
@@ -134,6 +133,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.about:
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
+            case R.id.newCity:
+                String s = spCity.getSelectedItem().toString();
+                final BottomCityChoiceFragment bottomCityChoiceFragment = new BottomCityChoiceFragment();
+                bottomCityChoiceFragment.show(getSupportFragmentManager(),"dialog fragment");
+                break;
             default:
                 break;
         }
@@ -146,33 +150,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (data == null || resultCode == RESULT_CANCELED) {
             return;
         }
-        switch (requestCode) {
-            case REQUEST_SETTINGS_CODE:
-                windUnit = data.getStringExtra(WIND_UNIT_TAG);
-                switch (windUnit) {
-                    case ("м/с"):
-                        windMultiplier = WIND_MULTIPLIER_TO_MPS;
-                        break;
-                    case ("км/ч"):
-                        windMultiplier = WIND_MULTIPLIER_TO_KMPH;
-                        break;
-                }
-                pressureUnit = data.getStringExtra(PRESSURE_UNIT_TAG);
-                switch (pressureUnit) {
-                    case ("кПа"):
-                        pressureMultiplier = PRESSURE_MULTIPLIER_TO_KPA;
-                        break;
-                    case ("мм.рт.ст."):
-                        pressureMultiplier = PRESSURE_MULTIPLIER_TO_MM_RT_ST;
-                        break;
-                }
-                showWind = data.getBooleanExtra(WIND_SHOW_TAG, true);
-                showPressure = data.getBooleanExtra(PRESSURE_SHOW_TAG, true);
-                break;
-            case REQUEST_NEWCITY_CODE:
-                spCityAdapter.add(data.getStringExtra(NEWCITY_TAG));
-                spCityAdapter.notifyDataSetChanged();
-                break;
+        if (requestCode == REQUEST_SETTINGS_CODE) {
+            windUnit = data.getStringExtra(WIND_UNIT_TAG);
+            switch (windUnit) {
+                case ("м/с"):
+                    windMultiplier = WIND_MULTIPLIER_TO_MPS;
+                    break;
+                case ("км/ч"):
+                    windMultiplier = WIND_MULTIPLIER_TO_KMPH;
+                    break;
+            }
+            pressureUnit = data.getStringExtra(PRESSURE_UNIT_TAG);
+            switch (pressureUnit) {
+                case ("кПа"):
+                    pressureMultiplier = PRESSURE_MULTIPLIER_TO_KPA;
+                    break;
+                case ("мм.рт.ст."):
+                    pressureMultiplier = PRESSURE_MULTIPLIER_TO_MM_RT_ST;
+                    break;
+            }
+            showWind = data.getBooleanExtra(WIND_SHOW_TAG, true);
+            showPressure = data.getBooleanExtra(PRESSURE_SHOW_TAG, true);
         }
         refresh();
     }
@@ -189,7 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCityAdapter.addAll(getResources().getStringArray(R.array.cities_selected));
         spCity.setAdapter(spCityAdapter);
         spCityAdapter.notifyDataSetChanged();
-        swForecastHistory = findViewById(R.id.swForecastHistory);
+        switchForecastHistory = findViewById(R.id.switchForecastHistory);
+
 
         showPressure = true;
         showWind = true;
@@ -203,13 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(final AdapterView<?> parent, final View view, int position, long id) {
-                final String item = parent.getSelectedItem().toString();
-                if (item.equals("Добавить…")) {
-                    startActivityForResult(new Intent(MainActivity.this, CityActivity.class), REQUEST_NEWCITY_CODE);
-                    parent.setSelection(0);
-                } else {
-                    refresh();
-                }
+                refresh();
             }
 
             @Override
@@ -217,10 +210,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        swForecastHistory.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+        switchForecastHistory.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                isHistory = isChecked;
+            public void onClick(View v) {
+                isHistory = switchForecastHistory.isRight();
                 refresh();
             }
         });
@@ -232,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             final Handler handler = new Handler();
             final URL urlCurrent = new URL(CURRENT_WEATHER_URL + citiesID.get(item) + API_URL);
             final URL urlForecast = new URL(FORECAST_WEATHER_URL + citiesID.get(item) + API_URL);
+            final URL urlHistory = new URL(HISTORY_WEATHER_URL + citiesID.get(item) + API_URL);
             new Thread(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
@@ -254,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         final ForecastWeather forecastWeather = gson.fromJson(result, ForecastWeather.class);
                         forecastWeather.setRequest(urlForecast.toString());
                         singleTon.getHistory().add(forecastWeather);
-                        System.out.println(result);
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -275,7 +268,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         });
                     } catch (Exception e) {
                         Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.fail_network), e);
-                        Snackbar.make(spCity, getResources().getString(R.string.fail_network), Snackbar.LENGTH_LONG).show();
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle(R.string.fail_network)
+                                        .setCancelable(false)
+                                        .setIcon(R.drawable.kompas)
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        });
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        });
                         e.printStackTrace();
                     } finally {
                         if (urlConnection != null) {

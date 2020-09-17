@@ -34,6 +34,7 @@ public class HistoryActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu,menu);
+        menu.findItem(R.id.newCity).setVisible(false);
         final MenuItem search = menu.findItem(R.id.search);
         search.setVisible(true);
         SearchView searchView = (SearchView) search.getActionView();

@@ -1,6 +1,8 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -38,19 +40,37 @@ public class SettingsActivity extends Activity {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra(MainActivity.PRESSURE_SHOW_TAG, showPressure.isChecked());
-                intent.putExtra(MainActivity.WIND_SHOW_TAG, showWindSpeed.isChecked());
-                intent.putExtra(MainActivity.WIND_UNIT_TAG, String.valueOf(windUnit.getSelectedItem()));
-                intent.putExtra(MainActivity.PRESSURE_UNIT_TAG, String.valueOf(pressureUnit.getSelectedItem()));
-                setResult(MainActivity.RESULT_OK, intent);
-                Snackbar.make(v,"Вы уверены, что хотите применить настройки?",
-                        Snackbar.LENGTH_LONG).setAction("OK",new View.OnClickListener(){
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                builder.setTitle(R.string.sure_before_settings)
+                        .setCancelable(true)
+                        .setIcon(R.drawable.ic_baseline_settings_24)
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.putExtra(MainActivity.PRESSURE_SHOW_TAG, showPressure.isChecked());
+                                intent.putExtra(MainActivity.WIND_SHOW_TAG, showWindSpeed.isChecked());
+                                intent.putExtra(MainActivity.WIND_UNIT_TAG, String.valueOf(windUnit.getSelectedItem()));
+                                intent.putExtra(MainActivity.PRESSURE_UNIT_TAG, String.valueOf(pressureUnit.getSelectedItem()));
+                                setResult(MainActivity.RESULT_OK, intent);
                                 finish();
                             }
-                        }).show();
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                setResult(MainActivity.RESULT_CANCELED, new Intent());
+                            }
+                        })
+                        .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                setResult(MainActivity.RESULT_CANCELED, new Intent());
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
         });
 

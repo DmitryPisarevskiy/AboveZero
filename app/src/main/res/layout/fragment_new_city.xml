@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CityActivity">
+    android:theme="@style/AppTheme"
+    tools:context=".BottomCityChoiceFragment">
 
     <TextView
+        android:layout_margin="@dimen/standart_margin"
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="@dimen/standart_margin"
         android:id="@+id/rvCities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,6 +61,7 @@
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:layout_margin="@dimen/standart_margin"
             android:id="@+id/tietCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

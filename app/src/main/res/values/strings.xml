@@ -71,11 +71,15 @@
     <string name="search">Поиск</string>
     <string name="home">Домашняя страница</string>
     <string name="request_history">История запросов</string>
+    <string name="incorrect_name">Введно некорректное название города</string>
+    <string name="sure_before_settings">Вы уверены, что хотите применить настройки?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="add">Добавить город</string>
     <string-array name="cities_selected">
         <item>Нурдавлетово</item>
         <item>Москва</item>
         <item>Санкт-Петербург</item>
-        <item>Добавить…</item>
     </string-array>
     <string-array name="cities">
         <item>Уфа</item>

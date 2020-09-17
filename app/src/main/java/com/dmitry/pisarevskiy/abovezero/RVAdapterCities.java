@@ -27,7 +27,7 @@ public class RVAdapterCities extends RecyclerView.Adapter<RVAdapterCities.ViewHo
             @Override
             public void onClick(View view) {
                 TextView tvCity = view.findViewById(R.id.tvCity);
-                CityActivity.tietCity.setText(tvCity.getText());
+                BottomCityChoiceFragment.tietCity.setText(tvCity.getText());
             }
         });
         return new ViewHolder(view);
@@ -42,7 +42,7 @@ public class RVAdapterCities extends RecyclerView.Adapter<RVAdapterCities.ViewHo
     public int getItemCount() {
         if (cities == null) {
             return 0;
-        };
+        }
         return cities.size();
     }
 
