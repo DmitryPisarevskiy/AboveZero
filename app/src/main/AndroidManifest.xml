@@ -9,8 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service
+            android:name=".BoundService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity android:name=".HistoryActivity"></activity>
-        <activity android:name=".CityActivity" />
         <activity android:name=".AboutActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

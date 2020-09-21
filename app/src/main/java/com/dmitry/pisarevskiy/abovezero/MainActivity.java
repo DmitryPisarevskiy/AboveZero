@@ -14,12 +14,18 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +36,7 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 
 import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherJsonProcessService;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -43,6 +50,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import com.dmitry.pisarevskiy.abovezero.BoundService.ServiceBinder;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -74,10 +82,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static boolean showPressure;
     private static String activityState;
     final SingleTon singleTon = SingleTon.getInstance();
+    private boolean isBound;
 
     private Spinner spCity;
     protected ArrayAdapter<String> spCityAdapter;
     private MySwitchView switchForecastHistory;
+
+    private ServiceBinder boundService;
 
     private final String[] TIMES_HISTORY = {"09.00", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00"};
 
@@ -121,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return super.onCreateOptionsMenu(menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -220,84 +230,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void refresh() {
-        String item = spCity.getSelectedItem().toString();
-        try {
-            final Handler handler = new Handler();
-            final URL urlCurrent = new URL(CURRENT_WEATHER_URL + citiesID.get(item) + API_URL);
-            final URL urlForecast = new URL(FORECAST_WEATHER_URL + citiesID.get(item) + API_URL);
-            final URL urlHistory = new URL(HISTORY_WEATHER_URL + citiesID.get(item) + API_URL);
-            new Thread(new Runnable() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void run() {
-                    HttpURLConnection urlConnection = null;
-                    try {
-                        urlConnection = (HttpURLConnection) urlCurrent.openConnection();
-                        urlConnection.setRequestMethod("GET");
-                        urlConnection.setReadTimeout(10000);
-                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                        String result = in.lines().collect(Collectors.joining("\n"));
-                        Gson gson = new Gson();
-                        System.out.println(result);
-                        final WeatherSample currentWeather = gson.fromJson(result, WeatherSample.class);
-                        urlConnection = (HttpURLConnection) urlForecast.openConnection();
-                        urlConnection.setRequestMethod("GET");
-                        urlConnection.setReadTimeout(10000);
-                        in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                        result = in.lines().collect(Collectors.joining("\n"));
-                        final ForecastWeather forecastWeather = gson.fromJson(result, ForecastWeather.class);
-                        forecastWeather.setRequest(urlForecast.toString());
-                        singleTon.getHistory().add(forecastWeather);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
-                                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                                CityFragment city = CityFragment.newInstance(forecastWeather.getCity().getId(), forecastWeather.getCity().getName(), currentWeather.getMain().getTemp(), currentWeather.getWind().getSpeed(), currentWeather.getImage());
-                                DataFragment history = DataFragment.newInstance(
-                                        isHistory ? TIMES_HISTORY : forecastWeather.getTimes(NUM_OF_DATA_ITEMS),
-                                        isHistory ? IMG_HISTORY[pos] : forecastWeather.getImages(NUM_OF_DATA_ITEMS),
-                                        isHistory ? TEMPERATURES_HISTORY[pos] : forecastWeather.getTemps(NUM_OF_DATA_ITEMS),
-                                        isHistory ? PRESSURES_HISTORY[pos] : forecastWeather.getPressures(NUM_OF_DATA_ITEMS),
-                                        isHistory ? WINDS_HISTORY[pos] : forecastWeather.getWinds(NUM_OF_DATA_ITEMS));
-                                ft.replace(R.id.flData, history);
-                                ft.replace(R.id.flCityFrame, city);
-                                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                                ft.commit();
-                            }
-                        });
-                    } catch (Exception e) {
-                        Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.fail_network), e);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                builder.setTitle(R.string.fail_network)
-                                        .setCancelable(false)
-                                        .setIcon(R.drawable.kompas)
-                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        });
-                                AlertDialog alert = builder.create();
-                                alert.show();
-                            }
-                        });
-                        e.printStackTrace();
-                    } finally {
-                        if (urlConnection != null) {
-                            urlConnection.disconnect();
+        final String item = spCity.getSelectedItem().toString();
+        final Handler handler = new Handler();
+        new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                try {
+                    Intent intent = new Intent(MainActivity.this, BoundService.class);
+                    bindService(intent, boundServiceConnection, BIND_AUTO_CREATE);
+//                    String currentWeatherJSON = boundService.getCurrentWeatherJSON(citiesID.get(item));
+//                    String forecastWeatherJSON = boundService.getForecastWeatherJSON(citiesID.get(item));
+//                    WeatherJsonProcessService wjpService = new WeatherJsonProcessService(currentWeatherJSON, forecastWeatherJSON,MainActivity.this);
+                    OpenWeatherMapService owmService = new OpenWeatherMapService(citiesID.get(item), MainActivity.this);
+                    WeatherJsonProcessService wjpService = new WeatherJsonProcessService(owmService.getCurrentWeatherJSON(), owmService.getForecastWeatherJSON(),MainActivity.this);
+                    final ForecastWeather forecastWeather = wjpService.getForecastWeather();
+                    final WeatherSample currentWeather = wjpService.getCurrentWeather();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
+                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                            CityFragment city = CityFragment.newInstance(forecastWeather.getCity().getId(), forecastWeather.getCity().getName(), currentWeather.getMain().getTemp(), currentWeather.getWind().getSpeed(), currentWeather.getImage());
+                            DataFragment data = DataFragment.newInstance(
+                                    isHistory ? TIMES_HISTORY : forecastWeather.getTimes(NUM_OF_DATA_ITEMS),
+                                    isHistory ? IMG_HISTORY[pos] : forecastWeather.getImages(NUM_OF_DATA_ITEMS),
+                                    isHistory ? TEMPERATURES_HISTORY[pos] : forecastWeather.getTemps(NUM_OF_DATA_ITEMS),
+                                    isHistory ? PRESSURES_HISTORY[pos] : forecastWeather.getPressures(NUM_OF_DATA_ITEMS),
+                                    isHistory ? WINDS_HISTORY[pos] : forecastWeather.getWinds(NUM_OF_DATA_ITEMS));
+                            ft.replace(R.id.flData, data);
+                            ft.replace(R.id.flCityFrame, city);
+                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                            ft.commit();
                         }
-                    }
-
+                    });
+                } catch (Exception e) {
+                    Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.fail_network), e);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle(R.string.fail_network)
+                            .setCancelable(false)
+                            .setIcon(R.drawable.kompas)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
-            }).start();
-        } catch (MalformedURLException e) {
-            Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.incorrect_uri), e);
-            Snackbar.make(spCity, getResources().getString(R.string.incorrect_uri), Snackbar.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+            }
+        }).start();
     }
 
     private void initDrawer() {
@@ -337,4 +319,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    // Обработка соединения с сервисом
+    private final ServiceConnection boundServiceConnection = new ServiceConnection() {
+
+        // При соединении с сервисом
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            boundService = (ServiceBinder) service;
+            isBound = boundService != null;
+        }
+
+        // При разъдинении с сервисом
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+            boundService = null;
+        }
+    };
 }
