@@ -4,7 +4,16 @@ public class City {
     private int id;
     private String name;
     private long sunrise;
+    private long timezone;
     private long sunset;
+
+    public void setTimezone(long timezone) {
+        this.timezone = timezone;
+    }
+
+    public long getTimezone() {
+        return timezone;
+    }
 
     public void setId(int id) {
         this.id = id;

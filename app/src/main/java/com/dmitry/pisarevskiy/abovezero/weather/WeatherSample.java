@@ -2,12 +2,24 @@ package com.dmitry.pisarevskiy.abovezero.weather;
 
 import com.dmitry.pisarevskiy.abovezero.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class WeatherSample {
     private Weather[] weather;
     private Main main;
     private Wind wind;
     private Clouds clouds;
     private String dt_txt;
+    private int dt;
+
+    public int getDt() {
+        return dt;
+    }
+
+    public void setDt(int dt) {
+        this.dt = dt;
+    }
 
     public void setDt_txt(String dt_txt) {
         this.dt_txt = dt_txt;
@@ -78,4 +90,5 @@ public class WeatherSample {
         }
         return img;
     }
+
 }

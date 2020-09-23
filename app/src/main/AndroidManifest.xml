@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".BoundService"
+            android:name=".NetRequestService"
             android:enabled="true"
             android:exported="true" />
 

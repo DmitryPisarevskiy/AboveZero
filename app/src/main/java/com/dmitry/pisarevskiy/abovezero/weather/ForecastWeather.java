@@ -5,6 +5,9 @@ import android.content.res.Resources;
 import com.dmitry.pisarevskiy.abovezero.MainActivity;
 import com.dmitry.pisarevskiy.abovezero.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ForecastWeather {
     private WeatherSample[] list;
     private City city;
@@ -61,7 +64,9 @@ public class ForecastWeather {
     public String[] getTimes(int numOfData) {
         String[] arr = new String[numOfData];
         for (int i = 0; i < numOfData; i++) {
-            arr[i]=getList()[i].getDt_txt().substring(12,16);
+            Date date = new java.util.Date((getList()[i].getDt() + city.getTimezone())*1000L);
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm");
+            arr[i]=sdf.format(date);
         }
         return arr;
     }
