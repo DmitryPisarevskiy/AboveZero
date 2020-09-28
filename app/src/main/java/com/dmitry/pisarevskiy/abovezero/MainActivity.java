@@ -3,7 +3,6 @@ package com.dmitry.pisarevskiy.abovezero;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,31 +10,34 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherJsonProcessService;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 import com.google.android.material.navigation.NavigationView;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 
@@ -51,18 +53,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static float pressureMultiplier;
     protected static float windMultiplier;
 
+    private OpenWeather openWeather;
+
     protected static final String WIND_UNIT_TAG = "Wind unit";
     protected static final String PRESSURE_UNIT_TAG = "Pressure unit";
     protected static final String WIND_SHOW_TAG = "Show wind";
     protected static final String PRESSURE_SHOW_TAG = "Pressure show";
     protected static final String NEWCITY_TAG = "New city";
-    protected static final String HISTORY_WEATHER_URL = "https://api.openweathermap.org/data/2.5/history?id=";
     protected static final String CURRENT_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?id=";
     protected static final String FORECAST_WEATHER_URL = "https://api.openweathermap.org/data/2.5/forecast?id=";
+    protected static final String BASE_URL = "https://api.openweathermap.org/";
     protected static final int NUM_OF_DATA_ITEMS = 7;
     private static final int REQUEST_SETTINGS_CODE = 1;
     private static final String FAIL_NETWORK_TAG = "fail network";
     private static final String API_URL = "&appid=3f371cc26311182846ffe9eeabc50393";
+    private static final String API = "3f371cc26311182846ffe9eeabc50393";
     protected static String degreeUnit = "°C";
     protected static String windUnit;
     protected static String pressureUnit;
@@ -190,10 +195,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_main);
+
         initDrawer();
+        initRetrofit();
+
         spCity = findViewById(R.id.spCity);
         spCityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, android.R.id.text1);
         spCityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -201,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCity.setAdapter(spCityAdapter);
         spCityAdapter.notifyDataSetChanged();
         switchForecastHistory = findViewById(R.id.switchForecastHistory);
-
 
         showPressure = true;
         showWind = true;
@@ -236,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final String item = spCity.getSelectedItem().toString();
         final Handler handler = new Handler();
         NetRequestService.startNetRequestService(MainActivity.this, citiesID.get(item));
+        requestRetrofit(citiesID.get(item),API);
     }
 
     private void initDrawer() {
@@ -243,6 +250,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        ImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.program_image);
+        Picasso.get()
+                .load(getString(R.string.program_image_url))
+                .into(imageView);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -255,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = menuItem.getItemId();
         switch (id) {
             case R.id.nav_home:
-                String url = "http://geekbrains.ru";
+                String url = getString(R.string.geekbrains_ru);
                 Uri uri = Uri.parse(url);
                 Intent browser = new Intent(Intent.ACTION_VIEW,uri);
                 startActivity(browser);
@@ -280,40 +291,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BroadcastReceiver dataLoadedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            final String currentWeatherJSON = intent.getStringExtra(NetRequestService.EXTRA_CURRENT_WEATHER_JSON);
-            final String forecastWeatherJSON = intent.getStringExtra(NetRequestService.EXTRA_FORECAST_WEATHER_JSON);
-            try {
-                WeatherJsonProcessService wjpService = new WeatherJsonProcessService(currentWeatherJSON, forecastWeatherJSON,MainActivity.this);
-                ForecastWeather forecastWeather = wjpService.getForecastWeather();
-                WeatherSample currentWeather = wjpService.getCurrentWeather();
-                int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                CityFragment city = CityFragment.newInstance(forecastWeather.getCity().getId(), forecastWeather.getCity().getName(), currentWeather.getMain().getTemp(), currentWeather.getWind().getSpeed(), currentWeather.getImage());
-                DataFragment data = DataFragment.newInstance(
-                        isHistory ? TIMES_HISTORY : forecastWeather.getTimes(NUM_OF_DATA_ITEMS),
-                        isHistory ? IMG_HISTORY[pos] : forecastWeather.getImages(NUM_OF_DATA_ITEMS),
-                        isHistory ? TEMPERATURES_HISTORY[pos] : forecastWeather.getTemps(NUM_OF_DATA_ITEMS),
-                        isHistory ? PRESSURES_HISTORY[pos] : forecastWeather.getPressures(NUM_OF_DATA_ITEMS),
-                        isHistory ? WINDS_HISTORY[pos] : forecastWeather.getWinds(NUM_OF_DATA_ITEMS));
-                ft.replace(R.id.flData, data);
-                ft.replace(R.id.flCityFrame, city);
-                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                ft.commit();
-            } catch (Exception e) {
-                Log.e(FAIL_NETWORK_TAG, getResources().getString(R.string.fail_network), e);
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.fail_network)
-                        .setCancelable(false)
-                        .setIcon(R.drawable.kompas)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
         }
     };
+
+
+    private void initRetrofit() {
+        Retrofit retrofit;
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
+
+
+    private void requestRetrofit(String cityID, String keyAPI) {
+        openWeather.loadCurrentWeather(cityID, keyAPI)
+                .enqueue(new Callback<WeatherSample>() {
+                    @Override
+                    public void onResponse(Call<WeatherSample> call, Response<WeatherSample> response) {
+                        if (response.body()!=null) {
+                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                            CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getMain().getTemp(), response.body().getWind().getSpeed(), response.body().getImage());
+                            ft.replace(R.id.flCityFrame, city);
+                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                            ft.commit();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<WeatherSample> call, Throwable t) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(R.string.fail_network)
+                                .setCancelable(false)
+                                .setIcon(R.drawable.kompas)
+                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                });
+        openWeather.loadForecastWeather(cityID,keyAPI)
+                .enqueue(new Callback<ForecastWeather>() {
+                    @Override
+                    public void onResponse(Call<ForecastWeather> call, Response<ForecastWeather> response) {
+                        if (response.body()!=null) {
+                            int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
+                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                            DataFragment data = DataFragment.newInstance(
+                                    isHistory ? TIMES_HISTORY : response.body().getTimes(NUM_OF_DATA_ITEMS),
+                                    isHistory ? IMG_HISTORY[pos] : response.body().getImages(NUM_OF_DATA_ITEMS),
+                                    isHistory ? TEMPERATURES_HISTORY[pos] : response.body().getTemps(NUM_OF_DATA_ITEMS),
+                                    isHistory ? PRESSURES_HISTORY[pos] : response.body().getPressures(NUM_OF_DATA_ITEMS),
+                                    isHistory ? WINDS_HISTORY[pos] : response.body().getWinds(NUM_OF_DATA_ITEMS));
+                            ft.replace(R.id.flData, data);
+                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                            ft.commit();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ForecastWeather> call, Throwable t) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(R.string.fail_network)
+                                .setCancelable(false)
+                                .setIcon(R.drawable.kompas)
+                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                });
+
+    }
+
 
 }

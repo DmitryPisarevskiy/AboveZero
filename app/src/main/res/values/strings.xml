@@ -76,6 +76,8 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="add">Добавить город</string>
+    <string name="geekbrains.ru">http://geekbrains.ru</string>
+    <string name="program_image_url">https://betsydittman.com/wp-content/uploads/2015/08/Fotolia_64703455_Subscription_Monthly_M-300x300.jpg</string>
     <string-array name="cities_selected">
         <item>Нурдавлетово</item>
         <item>Москва</item>

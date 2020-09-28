@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 public class NetRequestService extends IntentService {
-    private static final String ONECALL_WEATHER_URL = "https://api.openweathermap.org/data/2.5/onecall?lat=33.441792&lon=-94.037689&appid=";
+    private static final String ONECALL_WEATHER_URL = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={API key}";
     private static final String CURRENT_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?id=";
     private static final String FORECAST_WEATHER_URL = "https://api.openweathermap.org/data/2.5/forecast?id=";
     private static final String API_URL = "&appid=3f371cc26311182846ffe9eeabc50393";

@@ -4,13 +4,21 @@ import android.content.res.Resources;
 
 import com.dmitry.pisarevskiy.abovezero.MainActivity;
 import com.dmitry.pisarevskiy.abovezero.R;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ForecastWeather {
+    @SerializedName("list")
+    @Expose
     private WeatherSample[] list;
+
+    @SerializedName("city")
+    @Expose
     private City city;
+
     private String request;
 
     public void setRequest(String request) {

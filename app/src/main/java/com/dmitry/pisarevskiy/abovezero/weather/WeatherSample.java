@@ -1,16 +1,35 @@
 package com.dmitry.pisarevskiy.abovezero.weather;
 
 import com.dmitry.pisarevskiy.abovezero.R;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class WeatherSample {
+    @SerializedName("weather")
+    @Expose
     private Weather[] weather;
+
+    @SerializedName("main")
+    @Expose
     private Main main;
+
+    @SerializedName("wind")
+    @Expose
     private Wind wind;
+
+    @SerializedName("clouds")
+    @Expose
     private Clouds clouds;
+
+    @SerializedName("dt_txt")
+    @Expose
     private String dt_txt;
+
+    @SerializedName("dt")
+    @Expose
     private int dt;
 
     public int getDt() {
