@@ -9,20 +9,33 @@
 
     <TextView
         android:id="@+id/tvCity"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.35"
         tools:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvRequest"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvDate"
         android:layout_height="wrap_content"
-        tools:text="Request"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.2"
+        tools:text="date"
         android:layout_marginStart="@dimen/double_margin"
         app:layout_constraintStart_toEndOf="@id/tvCity"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/double_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvDate"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Temp" />
 
     <View
         android:id="@+id/divider"

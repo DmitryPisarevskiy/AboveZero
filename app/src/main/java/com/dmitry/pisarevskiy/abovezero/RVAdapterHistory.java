@@ -5,38 +5,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
+import com.dmitry.pisarevskiy.abovezero.database.Request;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class RVAdapterHistory extends RecyclerView.Adapter<RVAdapterHistory.ViewHolder> {
-    private ArrayList<ForecastWeather> forecastHistory;
-    private ArrayList<ForecastWeather> searchHistory;
+    private List<Request> forecastRequest;
+    private List<Request> searchRequest;
 
-    public void setSearchHistory(ArrayList<ForecastWeather> searchHistory) {
-        this.searchHistory = searchHistory;
+    public void setSearchRequest(List<Request> searchRequest) {
+        this.searchRequest = searchRequest;
     }
 
-    public ArrayList<ForecastWeather> getSearchHistory() {
-        return searchHistory;
+    public List<Request> getSearchRequest() {
+        return searchRequest;
     }
 
-    public void setForecastHistory(ArrayList<ForecastWeather> forecastHistory) {
-        this.forecastHistory = forecastHistory;
+    public void setForecastRequest(List<Request> forecastRequest) {
+        this.forecastRequest = forecastRequest;
     }
 
-    public ArrayList<ForecastWeather> getForecastHistory() {
-        return forecastHistory;
+    public List<Request> getForecastRequest() {
+        return forecastRequest;
     }
 
-    public RVAdapterHistory(ArrayList<ForecastWeather> forecastHistory) {
-        this.forecastHistory = forecastHistory;
-        searchHistory = new ArrayList<>();
-        searchHistory.addAll(forecastHistory);
+    public RVAdapterHistory(List<Request> forecastHistory) {
+        this.forecastRequest = forecastHistory;
+        searchRequest = new ArrayList<>();
+        searchRequest.addAll(forecastHistory);
     }
 
     @NonNull
@@ -47,23 +48,23 @@ public class RVAdapterHistory extends RecyclerView.Adapter<RVAdapterHistory.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(searchHistory.get(position));
+        holder.bind(searchRequest.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return searchHistory.size();
+        return searchRequest.size();
     }
 
     public void filter(String newText) {
         newText = newText.toLowerCase(Locale.getDefault());
-        searchHistory.clear();
+        searchRequest.clear();
         if (newText.length()==0) {
-            searchHistory.addAll(forecastHistory);
+            searchRequest.addAll(forecastRequest);
         } else {
-            for (ForecastWeather fh : forecastHistory) {
-                if (fh.getCity().getName().toLowerCase(Locale.getDefault()).contains(newText)) {
-                    searchHistory.add(fh);
+            for (Request fh : forecastRequest) {
+                if (fh.city.toLowerCase(Locale.getDefault()).contains(newText)) {
+                    searchRequest.add(fh);
                 }
             }
         }
@@ -72,17 +73,20 @@ public class RVAdapterHistory extends RecyclerView.Adapter<RVAdapterHistory.View
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvCity;
-        private final TextView tvRequest;
+        private final TextView tvTemp;
+        private final TextView tvDate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvCity = itemView.findViewById(R.id.tvCity);
-            tvRequest = itemView.findViewById(R.id.tvRequest);
+            tvTemp = itemView.findViewById(R.id.tvTemp);
+            tvDate = itemView.findViewById(R.id.tvDate);
         }
 
-        public void bind(ForecastWeather forecastWeather) {
-            tvCity.setText(forecastWeather.getCity().getName());
-            tvRequest.setText(forecastWeather.getRequest());
+        public void bind(Request request) {
+            tvCity.setText(request.city);
+            tvTemp.setText(String.format("%.1f °C",request.temperature));
+            tvDate.setText(request.date);
         }
     }
 }
