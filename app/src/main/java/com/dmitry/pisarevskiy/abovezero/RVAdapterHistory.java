@@ -72,7 +72,6 @@ public class RVAdapterHistory extends RecyclerView.Adapter<RVAdapterHistory.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         private final TextView tvCity;
         private final TextView tvTemp;
         private final TextView tvDate;
