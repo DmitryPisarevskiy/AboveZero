@@ -16,16 +16,28 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import android.annotation.TargetApi;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -34,7 +46,11 @@ import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
 import com.dmitry.pisarevskiy.abovezero.weather.Request;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -54,12 +70,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static float windMultiplier;
     //Тэги
     private static final String SP_CITY_TAG = "Selected city";
-    public static final String BROADCAST_DATA_LOADED = "data loaded";
     protected static final String WIND_UNIT_TAG = "Wind unit";
     protected static final String PRESSURE_UNIT_TAG = "Pressure unit";
     protected static final String WIND_SHOW_TAG = "Show wind";
     protected static final String PRESSURE_SHOW_TAG = "Pressure show";
     private static final int REQUEST_SETTINGS_CODE = 1;
+    // Приемники широковещательных сообщений
+    public static final String CONNECTIVITY_ACTION_LOLLIPOP = "com.dmitry.pisarevskiy.abovezero.CONNECTIVITY_ACTION_LOLLIPOP";
+    private NetReceiver netReceiver = new NetReceiver();
+    private BroadcastReceiver batteryReciever = new BatteryReciever();
     //Доступ к OpenWeather
     private static final String API = "3f371cc26311182846ffe9eeabc50393";
     protected static final String BASE_URL = "https://api.openweathermap.org/";
@@ -180,6 +199,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initDrawer();
         initRetrofit();
         initGUI();
+        initGetToken();
+        initNotificationChannel();
+        initRecievers();
         // Установка настроек
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         showPressure = sharedPref.getBoolean(PRESSURE_SHOW_TAG, true);
@@ -211,6 +233,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .getInstance()
                 .getRequestDao();
         requestSource = new RequestSource(requestDao);
+    }
+
+    private void initRecievers() {
+        registerReceiver(batteryReciever, new IntentFilter(Intent.ACTION_BATTERY_LOW));
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        intentFilter.addAction(CONNECTIVITY_ACTION_LOLLIPOP);
+        registerReceiver(netReceiver, intentFilter);
+        registerConnectivityActionLollipop();
     }
 
     private void initGUI() {
@@ -345,6 +376,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         openWeather = retrofit.create(OpenWeather.class);
     }
 
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("2", "name", importance);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -360,5 +400,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editor.putString(PRESSURE_UNIT_TAG,pressureUnit);
         editor.putInt(SP_CITY_TAG, spCity.getSelectedItemPosition());
         editor.apply();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void registerConnectivityActionLollipop() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+        connectivityManager.registerNetworkCallback(builder.build(), new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(Network network) {
+                Intent intent = new Intent(CONNECTIVITY_ACTION_LOLLIPOP);
+                intent.putExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+                sendBroadcast(intent);
+            }
+            @Override
+            public void onLost(Network network) {
+                Intent intent = new Intent(CONNECTIVITY_ACTION_LOLLIPOP);
+                intent.putExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, true);
+                sendBroadcast(intent);
+            }
+        });
+    }
+
+    private void initGetToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("PushMessage", "getInstanceId failed", task.getException());
+                            return;
+                        }
+                    }
+                });
     }
 }
