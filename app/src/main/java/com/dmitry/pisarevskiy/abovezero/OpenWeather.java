@@ -1,6 +1,7 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 import com.dmitry.pisarevskiy.abovezero.weather.Current;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherOneCall;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 
@@ -16,5 +17,5 @@ public interface OpenWeather {
     Call<WeatherSample> loadCurrentWeather(@Query("id") String cityID, @Query("appid") String keyApi);
 
     @GET("data/2.5/onecall")
-    Call<Current> loadOneCallWeather(@Query("lat") String lat, @Query("lon") String lon, @Query("appid") String keyApi);
+    Call<WeatherOneCall> loadOneCallWeather(@Query("lat") String lat, @Query("lon") String lon, @Query("appid") String keyApi);
 }

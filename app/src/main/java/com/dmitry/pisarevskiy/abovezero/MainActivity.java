@@ -52,6 +52,7 @@ import com.dmitry.pisarevskiy.abovezero.database.App;
 import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
 import com.dmitry.pisarevskiy.abovezero.weather.Current;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherOneCall;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -299,17 +300,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View view) {
                 openWeather.loadOneCallWeather(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), API)
-                        .enqueue(new Callback<Current>() {
+                        .enqueue(new Callback<WeatherOneCall>() {
                             @Override
-                            public void onResponse(Call<Current> call, Response<Current> response) {
+                            public void onResponse(Call<WeatherOneCall> call, Response<WeatherOneCall> response) {
                                 if (response.body()!=null && location!=null) {
                                     Log.d("df",response.body().toString());
                                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                                    CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getTemp(), response.body().getWind_speed(), response.body().getImage());
+                                    CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getCurrent().getTemp(), response.body().getCurrent().getWind_speed(), response.body().getCurrent().getImage());
                                     ft.replace(R.id.flCurrentPlaceFrame, city);
                                     ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                                     ft.commit();
-                                    if (response.body().getTemp()< MIN_TEMP) {
+                                    if (response.body().getCurrent().getTemp()< MIN_TEMP) {
                                         NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "2")
                                                 .setSmallIcon(R.mipmap.ic_launcher)
                                                 .setContentTitle(TITLE)
@@ -321,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }
                             }
                             @Override
-                            public void onFailure(Call<Current> call, Throwable t) {
+                            public void onFailure(Call<WeatherOneCall> call, Throwable t) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                                 builder.setTitle(R.string.fail_network)
                                         .setCancelable(false)
