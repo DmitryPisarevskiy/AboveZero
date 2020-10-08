@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showLocation(Location l) {
         TextView tvCoordinates = findViewById(R.id.tvCoordinates);
-        tvCoordinates.setText(String.format("Lat - %.2f, Lon - %0.2f", l.getLatitude(), l.getLongitude()));
+        tvCoordinates.setText(String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
     }
 
     @Override
