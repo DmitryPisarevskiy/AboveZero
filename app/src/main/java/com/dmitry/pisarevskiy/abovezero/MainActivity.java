@@ -179,6 +179,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // Установка настроек
+        sharedPref = getPreferences(MODE_PRIVATE);
+        showPressure = sharedPref.getBoolean(PRESSURE_SHOW_TAG, true);
+        showWind = sharedPref.getBoolean(WIND_SHOW_TAG, true);
+        pressureUnit = sharedPref.getString(PRESSURE_UNIT_TAG, getResources().getStringArray(R.array.pressure_unit)[0]);
+        windUnit = sharedPref.getString(WIND_UNIT_TAG, getResources().getStringArray(R.array.wind_unit)[0]);
+        isDaily = false;
+        setMultipliers();
         // Инициализация
         initDrawer();
         initRetrofit();
@@ -193,49 +201,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Manifest.permission.ACCESS_COARSE_LOCATION },
                     TAG_CODE_PERMISSION_LOCATION);
         }
-        // Установка настроек
-        sharedPref = getPreferences(MODE_PRIVATE);
-        showPressure = sharedPref.getBoolean(PRESSURE_SHOW_TAG, true);
-        showWind = sharedPref.getBoolean(WIND_SHOW_TAG, true);
-        pressureUnit = sharedPref.getString(PRESSURE_UNIT_TAG, getResources().getStringArray(R.array.pressure_unit)[0]);
-        windUnit = sharedPref.getString(WIND_UNIT_TAG, getResources().getStringArray(R.array.wind_unit)[0]);
-        isDaily = false;
-        setMultipliers();
         refresh();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            finish();
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                1000 * 10, 10, new LocationListener() {
-                    @Override
-                    public void onLocationChanged(@NonNull Location l) {
-                        location = l;
-                        Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
-                    }
-                    @Override
-                    public void onProviderEnabled(@NonNull String provider) {
-                        checkEnabled();
-                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {
-                                            Manifest.permission.ACCESS_FINE_LOCATION,
-                                            Manifest.permission.ACCESS_COARSE_LOCATION },
-                                    TAG_CODE_PERMISSION_LOCATION);
-                        } else {
-                            location = locationManager.getLastKnownLocation(provider);
-                            Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", location.getLatitude(), location.getLongitude()));
-                        }
-                    }
-                    @Override
-                    public void onProviderDisabled(@NonNull String provider) {
-                        checkEnabled();
-                    }
-                });
-        checkEnabled();
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            finish();
+//        }
+//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+//                1000 * 10, 10, new LocationListener() {
+//                    @Override
+//                    public void onLocationChanged(@NonNull Location l) {
+//                        location = l;
+//                        Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
+//                    }
+//                    @Override
+//                    public void onProviderEnabled(@NonNull String provider) {
+//                        checkEnabled();
+//                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {
+//                                            Manifest.permission.ACCESS_FINE_LOCATION,
+//                                            Manifest.permission.ACCESS_COARSE_LOCATION },
+//                                    TAG_CODE_PERMISSION_LOCATION);
+//                        } else {
+//                            location = locationManager.getLastKnownLocation(provider);
+//                            Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", location.getLatitude(), location.getLongitude()));
+//                        }
+//                    }
+//                    @Override
+//                    public void onProviderDisabled(@NonNull String provider) {
+//                        checkEnabled();
+//                    }
+//                });
+//        checkEnabled();
     }
 
     @Override
