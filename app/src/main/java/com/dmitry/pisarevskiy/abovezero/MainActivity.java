@@ -53,6 +53,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int RC_SIGN_IN = 40404;
     private static final String TAG = "GoogleAuth";
     private GoogleSignInClient googleSignInClient;
+    private SignInButton sibGoogle;
     //Для статистики погоды
     private final HashMap<String, City> cities = new HashMap() {{
         put("Нурдавлетово", new City(479561, "Нурдавлетово", 55.90773f,53.383652f));
@@ -120,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         put("Кострома", new City(543878, "Кострома", 40.934444f,57.770832f));
     }};
     private RequestSource requestSource;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void enableGUI() {
         spCity.setEnabled(true);
+        sibGoogle.setEnabled(false);
     }
 
     private void setMultipliers() {
@@ -240,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account==null) {
-            signIn();
+        if (account!=null) {
+            enableGUI();
         }
     }
 
@@ -311,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCity.setAdapter(spCityAdapter);
         spCityAdapter.notifyDataSetChanged();
         switchForecastHistory = findViewById(R.id.switchForecastHistory);
+        sibGoogle =findViewById(R.id.sibGoogle);
         // Установка слушателей
         spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -339,6 +344,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         spCity.setSelection(sharedPref.getInt(SP_CITY_TAG, 0));
+        sibGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
         RequestDao requestDao = App
                 .getInstance()
                 .getRequestDao();

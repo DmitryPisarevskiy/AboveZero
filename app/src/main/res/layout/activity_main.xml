@@ -98,6 +98,7 @@
         app:layout_constraintTop_toBottomOf="@+id/flData" />
 
     <ScrollView
+        android:id="@+id/svDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/divider2">
@@ -110,6 +111,15 @@
             tools:layout_editor_absoluteY="279dp"
             tools:layout_height="100dp" />
     </ScrollView>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sibGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/svDetails"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
