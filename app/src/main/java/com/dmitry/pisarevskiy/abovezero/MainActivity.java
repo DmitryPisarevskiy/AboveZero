@@ -30,7 +30,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -50,6 +49,11 @@ import com.dmitry.pisarevskiy.abovezero.database.App;
 import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherOneCall;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -101,6 +105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Spinner spCity;
     protected ArrayAdapter<String> spCityAdapter;
     private MySwitchView switchForecastHistory;
+    // Для аутентификацию через Google
+    private static final int RC_SIGN_IN = 40404;
+    private static final String TAG = "GoogleAuth";
+    private GoogleSignInClient googleSignInClient;
     //Для статистики погоды
     private final HashMap<String, City> cities = new HashMap() {{
         put("Нурдавлетово", new City(479561, "Нурдавлетово", 55.90773f,53.383652f));
@@ -142,6 +150,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task =
+                    GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
         if (data == null || resultCode == RESULT_CANCELED) {
             return;
         }
@@ -153,6 +166,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showPressure = data.getBooleanExtra(PRESSURE_SHOW_TAG, true);
         }
         refresh();
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account =
+                    completedTask.getResult(ApiException.class);
+            enableGUI();
+        } catch(ApiException e) {
+           Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
+
+    private void enableGUI() {
+        spCity.setEnabled(true);
     }
 
     private void setMultipliers() {
@@ -202,6 +229,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TAG_CODE_PERMISSION_LOCATION);
         }
         refresh();
+        // Проверка аутентификации через Google
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account==null) {
+            signIn();
+        }
+    }
+
+    private void signIn() {
+        Intent signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
@@ -275,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
+        spCity.setEnabled(false);
         switchForecastHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -351,39 +398,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         alert.show();
                     }
                 });
-//        openWeather.loadForecastWeather(String.valueOf(cities.get(item).getId()),API)
-//                .enqueue(new Callback<WeatherRequest>() {
-//                    @Override
-//                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
-//                        if (response.body()!=null) {
-//                            int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
-//                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-////                            DataFragment data = DataFragment.newInstance(
-////                                    isDaily ? response.body().getTimes(NUM_OF_DATA_ITEMS) : response.body().getTimes(NUM_OF_DATA_ITEMS),
-////                                    isDaily ? response.body().getImages(NUM_OF_DATA_ITEMS) : response.body().getImages(NUM_OF_DATA_ITEMS),
-////                                    isDaily ? response.body().getTemps(NUM_OF_DATA_ITEMS) : response.body().getTemps(NUM_OF_DATA_ITEMS),
-////                                    isDaily ? response.body().getPressures(NUM_OF_DATA_ITEMS) : response.body().getPressures(NUM_OF_DATA_ITEMS),
-////                                    isDaily ? response.body().getWinds(NUM_OF_DATA_ITEMS) : response.body().getWinds(NUM_OF_DATA_ITEMS));
-////                            ft.replace(R.id.flData, data);
-//                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-//                            ft.commit();
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//                        builder.setTitle(R.string.fail_network)
-//                                .setCancelable(false)
-//                                .setIcon(R.drawable.kompas)
-//                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                    }
-//                                });
-//                        AlertDialog alert = builder.create();
-//                        alert.show();
-//                    }
-//                });
     }
 
     private void initDrawer() {
