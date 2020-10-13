@@ -7,6 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".CityFragment">
 
+    <com.dmitry.pisarevskiy.abovezero.SunriseSunsetView
+        android:id="@+id/ssvSunRiseSet"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="@dimen/standart_margin"
+        android:layout_marginTop="8dp"
+        app:dt="2000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
@@ -22,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:text="@string/info"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ssvSunRiseSet"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

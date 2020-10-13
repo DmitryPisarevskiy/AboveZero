@@ -15,6 +15,18 @@
         android:background="@color/colorPrimary">
     </androidx.appcompat.widget.Toolbar>
 
+    <Spinner
+        android:id="@+id/spCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:dropDownWidth="wrap_content"
+        android:entries="@array/cities_selected"
+        android:spinnerMode="dropdown"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_marginEnd="10dp"
@@ -33,17 +45,7 @@
         app:layout_constraintStart_toEndOf="@+id/switchForecastHistory"
         app:layout_constraintTop_toTopOf="@+id/switchForecastHistory"/>
 
-    <Spinner
-        android:id="@+id/spCity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:dropDownWidth="wrap_content"
-        android:entries="@array/cities_selected"
-        android:spinnerMode="dropdown"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
 
     <View
         android:id="@+id/divider"
@@ -85,5 +87,29 @@
         app:main_color="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/double_margin"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flData" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/divider2">
+        <FrameLayout
+            android:id="@+id/flDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="279dp"
+            tools:layout_height="100dp" />
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
