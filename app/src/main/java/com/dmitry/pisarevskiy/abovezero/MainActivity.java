@@ -312,7 +312,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     spCity.getSelectedItem().toString(),
                                     response.body().getCurrent().getTemp(),
                                     response.body().getCurrent().getWindSpeed(),
-                                    response.body().getCurrent().getImage());
+                                    response.body().getCurrent().getImage(),
+                                    response.body().getCurrent().getSunrise(),
+                                    response.body().getCurrent().getSunset(),
+                                    response.body().getCurrent().getDt(),
+                                    response.body().getTimeZone());
                             DataFragment data = DataFragment.newInstance(
                                     isDaily ? response.body().getDays() : response.body().getHours(),
                                     isDaily ? response.body().getDaysImages() : response.body().getHoursImages(),

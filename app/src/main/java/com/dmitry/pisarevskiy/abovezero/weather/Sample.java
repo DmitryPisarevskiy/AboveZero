@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 public class Sample {
     @SerializedName("dt")
     @Expose
-    private long dt;
+    private int dt;
 
     @SerializedName("pressure")
     @Expose
@@ -30,7 +30,7 @@ public class Sample {
     private Weather[] weather;
 
 
-    public long getDt() {
+    public int getDt() {
         return dt;
     }
 

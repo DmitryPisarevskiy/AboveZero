@@ -7,17 +7,17 @@ import com.google.gson.annotations.SerializedName;
 public class Current extends Hourly{
     @SerializedName("sunrise")
     @Expose
-    private long sunrise;
+    private int sunrise;
 
     @SerializedName("sunset")
     @Expose
-    private long sunsent;
+    private int sunset;
 
-    public long getSunrise() {
+    public int getSunrise() {
         return sunrise;
     }
 
-    public long getSunsent() {
-        return sunsent;
+    public int getSunset() {
+        return sunset;
     }
 }

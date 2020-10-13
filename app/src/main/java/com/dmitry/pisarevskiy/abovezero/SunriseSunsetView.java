@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 public class SunriseSunsetView extends View {
     private static final String TAG = "SunriseSunsetView";
     private static final int SUN_RADIUS = 40;
+    private static final float TEXT_SIZE = 40f;
     private int sunColor = R.color.yellow;
     private int mainColor = R.color.colorAccent;
     private final RectF mainRectangle = new RectF();
@@ -61,6 +62,7 @@ public class SunriseSunsetView extends View {
     private void initAttr(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.SunriseSunsetView, 0, 0);
+        sunColor = typedArray.getColor(R.styleable.SunriseSunsetView_sun_color, R.color.yellow);
         sunrise = typedArray.getInteger(R.styleable.SunriseSunsetView_sunrise, 0);
         sunset = typedArray.getInteger(R.styleable.SunriseSunsetView_sunset, 18000);
         dt = typedArray.getInteger(R.styleable.SunriseSunsetView_dt, 9000);
@@ -76,9 +78,8 @@ public class SunriseSunsetView extends View {
         mainPaint = new Paint();
         mainPaint.setColor(mainColor);
         mainPaint.setStyle(Paint.Style.STROKE);
-        mainPaint.setTextSize(200f);
-        mainPaint.setAlpha(50);
-        mainPaint.setStrokeWidth(5);
+        mainPaint.setTextSize(TEXT_SIZE);
+        mainPaint.setStrokeWidth(3);
     }
 
     @Override
@@ -113,7 +114,22 @@ public class SunriseSunsetView extends View {
         SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.US);
         canvas.drawText(sdf.format(date),2*PADDING,height-2*PADDING,mainPaint);
         date = new java.util.Date(sunset*1000L);
-        canvas.drawText(sdf.format(date),width - 2*PADDING,height-2*PADDING,mainPaint);
+        canvas.drawText(sdf.format(date),width - 4*PADDING-2*TEXT_SIZE,height-2*PADDING,mainPaint);
+    }
+
+    public void setSunrise(int i) {
+        sunrise = i;
+        invalidate();
+    }
+
+    public void setSunset(int i) {
+        sunset = i;
+        invalidate();
+    }
+
+    public void setDt(int i) {
+        dt = i;
+        invalidate();
     }
 }
 

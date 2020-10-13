@@ -6,6 +6,7 @@
         <attr name="right" format="boolean" />
     </declare-styleable>
     <declare-styleable name="SunriseSunsetView">
+        <attr name="sun_color" format="color" />
         <attr name="sunrise" format="integer" />
         <attr name="sunset" format="integer" />
         <attr name="dt" format="integer" />

@@ -13,6 +13,7 @@
         android:layout_height="150dp"
         android:layout_margin="@dimen/standart_margin"
         android:layout_marginTop="8dp"
+        app:sun_color="@color/yellow"
         app:dt="2000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.473"
@@ -23,10 +24,10 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/double_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnInfo"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/week_cloudly" />
 
     <com.google.android.material.button.MaterialButton
@@ -34,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:text="@string/info"
-        app:layout_constraintTop_toTopOf="@id/ssvSunRiseSet"
+        app:layout_constraintTop_toBottomOf="@id/tvTemp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
