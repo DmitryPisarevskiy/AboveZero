@@ -33,7 +33,7 @@ public class CityFragment extends Fragment {
     public static CityFragment newInstance(int id, String name, float temp, float speed, int clouds) {
         CityFragment fragment = new CityFragment();
         Bundle args = new Bundle();
-        args.putFloat(ARG_ID, id);
+        args.putInt(ARG_ID, id);
         args.putFloat(ARG_TEMP, temp);
         args.putString(ARG_NAME, name);
         args.putFloat(ARG_SPEED, speed);
@@ -96,7 +96,7 @@ public class CityFragment extends Fragment {
         btnInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = String.format("https://yandex.ru/search/?text=%s погода на неделю", nameOfCity);
+                String url = String.format("https://yandex.ru/search/?text=%s город", nameOfCity);
                 Uri uri = Uri.parse(url);
                 Intent browser = new Intent(Intent.ACTION_VIEW, uri);
                 CityFragment.this.startActivity(browser);

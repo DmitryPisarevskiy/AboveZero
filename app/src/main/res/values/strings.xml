@@ -64,7 +64,7 @@
     <string name="incorrect_uri">Некорректный URI</string>
     <string name="nav_header_desc">Рисунок для Drawer</string>
     <string name="nav_header_title">AboveZero</string>
-    <string name="nav_header_subtitle">Прогноз погоды и статистика</string>
+    <string name="nav_header_subtitle">Прогноз погоды</string>
     <string name="navigation_drawer_open">Открыть drawer</string>
     <string name="navigation_drawer_close">Закрыть drawer</string>
     <string name="menu_share">Поделиться</string>

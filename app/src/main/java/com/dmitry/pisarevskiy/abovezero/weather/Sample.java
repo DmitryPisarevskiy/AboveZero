@@ -4,80 +4,54 @@ import com.dmitry.pisarevskiy.abovezero.R;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+public class Sample {
+    @SerializedName("dt")
+    @Expose
+    private long dt;
 
-public class WeatherSample {
+    @SerializedName("pressure")
+    @Expose
+    private float pressure;
+
+    @SerializedName("humidity")
+    @Expose
+    private float humidity;
+
+    @SerializedName("wind_speed")
+    @Expose
+    private float windSpeed;
+
+    @SerializedName("wind_deg")
+    @Expose
+    private float windDeg;
+
     @SerializedName("weather")
     @Expose
     private Weather[] weather;
 
-    @SerializedName("main")
-    @Expose
-    private Main main;
 
-    @SerializedName("wind")
-    @Expose
-    private Wind wind;
-
-    @SerializedName("clouds")
-    @Expose
-    private Clouds clouds;
-
-    @SerializedName("dt_txt")
-    @Expose
-    private String dt_txt;
-
-    @SerializedName("dt")
-    @Expose
-    private int dt;
-
-    public int getDt() {
+    public long getDt() {
         return dt;
     }
 
-    public void setDt(int dt) {
-        this.dt = dt;
+    public float getPressure() {
+        return pressure;
     }
 
-    public void setDt_txt(String dt_txt) {
-        this.dt_txt = dt_txt;
+    public float getHumidity() {
+        return humidity;
     }
 
-    public String getDt_txt() {
-        return dt_txt;
+    public float getWindDeg() {
+        return windDeg;
     }
 
-    public void setWeather(Weather[] weather) {
-        this.weather = weather;
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
-    }
-
-    public void setWind(Wind wind) {
-        this.wind = wind;
-    }
-
-    public void setClouds(Clouds clouds) {
-        this.clouds = clouds;
+    public float getWindSpeed() {
+        return windSpeed;
     }
 
     public Weather[] getWeather() {
         return weather;
-    }
-
-    public Main getMain() {
-        return main;
-    }
-
-    public Wind getWind() {
-        return wind;
-    }
-
-    public Clouds getClouds() {
-        return clouds;
     }
 
     public int getImage() {
@@ -109,5 +83,4 @@ public class WeatherSample {
         }
         return img;
     }
-
 }

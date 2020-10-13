@@ -8,7 +8,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -28,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -44,17 +44,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.dmitry.pisarevskiy.abovezero.database.App;
 import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
-import com.dmitry.pisarevskiy.abovezero.weather.Current;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherOneCall;
-import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
-import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -65,8 +60,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Objects;
-
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Переводные коэффициенты для температуры, давления
@@ -76,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static final float WIND_MULTIPLIER_TO_MPS = 1;
     protected static final float CONSTANT_FOR_KELVIN_SCALE = -273.15f;
     private static final int TAG_CODE_PERMISSION_LOCATION = 10;
-    private static final float MIN_TEMP = 10 - CONSTANT_FOR_KELVIN_SCALE ;
     protected static float pressureMultiplier;
     protected static float windMultiplier;
     //Тэги
@@ -91,18 +83,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NetReceiver netReceiver = new NetReceiver();
     private BroadcastReceiver batteryReciever = new BatteryReciever();
     //Доступ к OpenWeather
-    private static final String VERY_COLD ="It is very cold today" ;
-    private final String TITLE="Warning!";
+    private WeatherOneCall weatherOneCall;
     private LocationManager locationManager;
     private Location location;
     private static final String API = "3f371cc26311182846ffe9eeabc50393";
     protected static final String BASE_URL = "https://api.openweathermap.org/";
     private OpenWeather openWeather;
     //Настройки
+    private SharedPreferences sharedPref;
     protected static String degreeUnit = "°C";
     protected static String windUnit;
     protected static String pressureUnit;
-    protected static boolean isHistory = false;
+    protected static boolean isDaily = false;
     protected static boolean showWind;
     protected static boolean showPressure;
     // Элементы интерфйеса
@@ -110,40 +102,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected ArrayAdapter<String> spCityAdapter;
     private MySwitchView switchForecastHistory;
     //Для статистики погоды
-    //TODO переделать исторические данные на получение данных с OpenWeather
-    protected static final int NUM_OF_DATA_ITEMS = 7;
-    private final String[] TIMES_HISTORY = {"09.00", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00"};
-    private final HashMap<String, String> citiesID = new HashMap() {{
-        put("Нурдавлетово", "479561");
-        put("Москва", "524894");
-        put("Санкт-Петербург", "498817");
-        put("Самара", "499099");
-        put("Омск", "1496153");
-        put("Томск", "1489425");
-        put("Кострома", "543878");
+    private final HashMap<String, City> cities = new HashMap() {{
+        put("Нурдавлетово", new City(479561, "Нурдавлетово", 55.90773f,53.383652f));
+        put("Москва", new City(524894, "Москва", 37.606667f,55.761665f));
+        put("Санкт-Петербург", new City(498817, "Санкт-Петербург", 30.264168f,59.894444f));
+        put("Самара", new City(499099, "Самара", 50.150002f,53.200001f));
+        put("Омск", new City(1496153, "Омск", 73.400002f,55.0f));
+        put("Томск", new City(1489425, "Томск", 84.966667f,56.5f));
+        put("Кострома", new City(543878, "Кострома", 40.934444f,57.770832f));
     }};
-    private final int[][] IMG_HISTORY = {
-            {R.drawable.sunny, R.drawable.sunny, R.drawable.strong_rain, R.drawable.sunny, R.drawable.sunny, R.drawable.sunny, R.drawable.sunny},
-            {R.drawable.sunny, R.drawable.week_cloudly, R.drawable.strong_rain, R.drawable.strong_rain, R.drawable.sunny, R.drawable.sunny, R.drawable.week_cloudly},
-            {R.drawable.cloudly, R.drawable.strong_rain, R.drawable.strong_rain, R.drawable.strong_rain, R.drawable.strong_rain, R.drawable.cloudly, R.drawable.strong_rain},
-    };
-    private final float[][] TEMPERATURES_HISTORY = {
-            {300, 301, 302, 303, 304, 305, 306},
-            {276, 277, 278, 279, 280, 281, 282},
-            {256, 257, 258, 259, 260, 270, 280}
-    };
-    private final float[][] PRESSURES_HISTORY = {
-            {980, 990, 1000, 1010, 1020, 1030, 1040},
-            {1130, 1140, 1150, 1160, 1170, 1180, 1190},
-            {350, 450, 550, 650, 750, 850, 950}
-    };
-    private final float[][] WINDS_HISTORY = {
-            {0, 0, 0, 0, 0, 0, 0},
-            {3, 4, 5, 6, 7, 8, 9},
-            {70, 60, 50, 40, 30, 20, 10}
-    };
     private RequestSource requestSource;
-    private int messageId=3000;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -162,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(new Intent(this, AboutActivity.class));
                 break;
             case R.id.newCity:
-                String s = spCity.getSelectedItem().toString();
                 final BottomCityChoiceFragment bottomCityChoiceFragment = new BottomCityChoiceFragment();
                 bottomCityChoiceFragment.show(getSupportFragmentManager(), "dialog fragment");
                 break;
@@ -211,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Инициализация
         initDrawer();
         initRetrofit();
@@ -226,42 +194,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TAG_CODE_PERMISSION_LOCATION);
         }
         // Установка настроек
-        SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
+        sharedPref = getPreferences(MODE_PRIVATE);
         showPressure = sharedPref.getBoolean(PRESSURE_SHOW_TAG, true);
         showWind = sharedPref.getBoolean(WIND_SHOW_TAG, true);
         pressureUnit = sharedPref.getString(PRESSURE_UNIT_TAG, getResources().getStringArray(R.array.pressure_unit)[0]);
         windUnit = sharedPref.getString(WIND_UNIT_TAG, getResources().getStringArray(R.array.wind_unit)[0]);
-        isHistory = false;
+        isDaily = false;
         setMultipliers();
         refresh();
-        // Установка слушателей на элементы Activity
-        spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(final AdapterView<?> parent, final View view, int position, long id) {
-                refresh();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        });
-        switchForecastHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isHistory = switchForecastHistory.isRight();
-                refresh();
-            }
-        });
-        spCity.setSelection(sharedPref.getInt(SP_CITY_TAG, 0));
-        RequestDao requestDao = App
-                .getInstance()
-                .getRequestDao();
-        requestSource = new RequestSource(requestDao);
-    }
-
-    private void showLocation(Location l) {
-        TextView tvCoordinates = findViewById(R.id.tvCoordinates);
-        tvCoordinates.setText(String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
     }
 
     @Override
@@ -275,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onLocationChanged(@NonNull Location l) {
                         location = l;
-                        showLocation(l);
+                        Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
                     }
                     @Override
                     public void onProviderEnabled(@NonNull String provider) {
@@ -286,7 +226,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             Manifest.permission.ACCESS_COARSE_LOCATION },
                                     TAG_CODE_PERMISSION_LOCATION);
                         } else {
-                            showLocation(Objects.requireNonNull(locationManager.getLastKnownLocation(provider)));
+                            location = locationManager.getLastKnownLocation(provider);
+                            Log.d("Location",String.format("Lat - %.2f, Lon - %.2f", location.getLatitude(), location.getLongitude()));
                         }
                     }
                     @Override
@@ -295,49 +236,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 });
         checkEnabled();
-        Button btnCurrentPlabe = findViewById(R.id.btnKnowCurrentWeather);
-        btnCurrentPlabe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openWeather.loadOneCallWeather(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), API)
-                        .enqueue(new Callback<WeatherOneCall>() {
-                            @Override
-                            public void onResponse(Call<WeatherOneCall> call, Response<WeatherOneCall> response) {
-                                if (response.body()!=null && location!=null) {
-                                    Log.d("df",response.body().toString());
-                                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                                    CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getCurrent().getTemp(), response.body().getCurrent().getWind_speed(), response.body().getCurrent().getImage());
-                                    ft.replace(R.id.flCurrentPlaceFrame, city);
-                                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                                    ft.commit();
-                                    if (response.body().getCurrent().getTemp()< MIN_TEMP) {
-                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "2")
-                                                .setSmallIcon(R.mipmap.ic_launcher)
-                                                .setContentTitle(TITLE)
-                                                .setContentText(VERY_COLD);
-                                        NotificationManager notificationManager =
-                                                (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-                                        notificationManager.notify(messageId++, builder.build());
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onFailure(Call<WeatherOneCall> call, Throwable t) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                builder.setTitle(R.string.fail_network)
-                                        .setCancelable(false)
-                                        .setIcon(R.drawable.kompas)
-                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        });
-                                AlertDialog alert = builder.create();
-                                alert.show();
-                            }
-                        });
-            }
-        });
     }
 
     @Override
@@ -359,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initGUI() {
+        // Привязка элементов
         spCity = findViewById(R.id.spCity);
         spCityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, android.R.id.text1);
         spCityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -366,31 +265,75 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCity.setAdapter(spCityAdapter);
         spCityAdapter.notifyDataSetChanged();
         switchForecastHistory = findViewById(R.id.switchForecastHistory);
+        // Установка слушателей
+        spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(final AdapterView<?> parent, final View view, int position, long id) {
+                refresh();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+        switchForecastHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isDaily = switchForecastHistory.isRight();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                DataFragment data = DataFragment.newInstance(
+                        isDaily ? weatherOneCall.getDays() : weatherOneCall.getHours(),
+                        isDaily ? weatherOneCall.getDaysImages() : weatherOneCall.getHoursImages(),
+                        isDaily ? weatherOneCall.getDaysTemps() : weatherOneCall.getHoursTemps(),
+                        isDaily ? weatherOneCall.getDaysPressures() : weatherOneCall.getHoursPressures(),
+                        isDaily ? weatherOneCall.getDaysWinds() : weatherOneCall.getHoursWinds());
+                ft.replace(R.id.flData, data);
+                ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                ft.commit();
+            }
+        });
+        spCity.setSelection(sharedPref.getInt(SP_CITY_TAG, 0));
+        RequestDao requestDao = App
+                .getInstance()
+                .getRequestDao();
+        requestSource = new RequestSource(requestDao);
     }
 
     private void refresh() {
         final String item = spCity.getSelectedItem().toString();
-        openWeather.loadCurrentWeather(citiesID.get(item), API)
-                .enqueue(new Callback<WeatherSample>() {
+        openWeather.loadOneCallWeather(String.valueOf(cities.get(item).getLat()),String.valueOf(cities.get(item).getLon()), API)
+                .enqueue(new Callback<WeatherOneCall>() {
                     @Override
-                    public void onResponse(Call<WeatherSample> call, Response<WeatherSample> response) {
+                    public void onResponse(Call<WeatherOneCall> call, Response<WeatherOneCall> response) {
                         if (response.body()!=null) {
+                            weatherOneCall = response.body();
                             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                            CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getMain().getTemp(), response.body().getWind().getSpeed(), response.body().getImage());
+                            CityFragment city = CityFragment.newInstance(
+                                    cities.get(item).getId(),
+                                    spCity.getSelectedItem().toString(),
+                                    response.body().getCurrent().getTemp(),
+                                    response.body().getCurrent().getWindSpeed(),
+                                    response.body().getCurrent().getImage());
+                            DataFragment data = DataFragment.newInstance(
+                                    isDaily ? response.body().getDays() : response.body().getHours(),
+                                    isDaily ? response.body().getDaysImages() : response.body().getHoursImages(),
+                                    isDaily ? response.body().getDaysTemps() : response.body().getHoursTemps(),
+                                    isDaily ? response.body().getDaysPressures() : response.body().getHoursPressures(),
+                                    isDaily ? response.body().getDaysWinds() : response.body().getHoursWinds());
+                            ft.replace(R.id.flData, data);
                             ft.replace(R.id.flCityFrame, city);
                             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                             ft.commit();
                             com.dmitry.pisarevskiy.abovezero.database.Request request = new com.dmitry.pisarevskiy.abovezero.database.Request();
-                            Date date = new java.util.Date(response.body().getDt());
+                            Date date = new java.util.Date(response.body().getCurrent().getDt());
                             SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.US);
                             request.date = sdf.format(date);
                             request.city = spCity.getSelectedItem().toString();
-                            request.temperature = response.body().getMain().getTemp()+CONSTANT_FOR_KELVIN_SCALE;
+                            request.temperature = response.body().getCurrent().getTemp()+CONSTANT_FOR_KELVIN_SCALE;
                             requestSource.addRequest(request);
                         }
                     }
                     @Override
-                    public void onFailure(Call<WeatherSample> call, Throwable t) {
+                    public void onFailure(Call<WeatherOneCall> call, Throwable t) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                         builder.setTitle(R.string.fail_network)
                                 .setCancelable(false)
@@ -404,39 +347,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         alert.show();
                     }
                 });
-        openWeather.loadForecastWeather(citiesID.get(item),API)
-                .enqueue(new Callback<WeatherRequest>() {
-                    @Override
-                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
-                        if (response.body()!=null) {
-                            int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
-                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                            DataFragment data = DataFragment.newInstance(
-                                    isHistory ? TIMES_HISTORY : response.body().getTimes(NUM_OF_DATA_ITEMS),
-                                    isHistory ? IMG_HISTORY[pos] : response.body().getImages(NUM_OF_DATA_ITEMS),
-                                    isHistory ? TEMPERATURES_HISTORY[pos] : response.body().getTemps(NUM_OF_DATA_ITEMS),
-                                    isHistory ? PRESSURES_HISTORY[pos] : response.body().getPressures(NUM_OF_DATA_ITEMS),
-                                    isHistory ? WINDS_HISTORY[pos] : response.body().getWinds(NUM_OF_DATA_ITEMS));
-                            ft.replace(R.id.flData, data);
-                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                            ft.commit();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle(R.string.fail_network)
-                                .setCancelable(false)
-                                .setIcon(R.drawable.kompas)
-                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
-                });
+//        openWeather.loadForecastWeather(String.valueOf(cities.get(item).getId()),API)
+//                .enqueue(new Callback<WeatherRequest>() {
+//                    @Override
+//                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
+//                        if (response.body()!=null) {
+//                            int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
+//                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+////                            DataFragment data = DataFragment.newInstance(
+////                                    isDaily ? response.body().getTimes(NUM_OF_DATA_ITEMS) : response.body().getTimes(NUM_OF_DATA_ITEMS),
+////                                    isDaily ? response.body().getImages(NUM_OF_DATA_ITEMS) : response.body().getImages(NUM_OF_DATA_ITEMS),
+////                                    isDaily ? response.body().getTemps(NUM_OF_DATA_ITEMS) : response.body().getTemps(NUM_OF_DATA_ITEMS),
+////                                    isDaily ? response.body().getPressures(NUM_OF_DATA_ITEMS) : response.body().getPressures(NUM_OF_DATA_ITEMS),
+////                                    isDaily ? response.body().getWinds(NUM_OF_DATA_ITEMS) : response.body().getWinds(NUM_OF_DATA_ITEMS));
+////                            ft.replace(R.id.flData, data);
+//                            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+//                            ft.commit();
+//                        }
+//                    }
+//                    @Override
+//                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//                        builder.setTitle(R.string.fail_network)
+//                                .setCancelable(false)
+//                                .setIcon(R.drawable.kompas)
+//                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                    }
+//                                });
+//                        AlertDialog alert = builder.create();
+//                        alert.show();
+//                    }
+//                });
     }
 
     private void initDrawer() {

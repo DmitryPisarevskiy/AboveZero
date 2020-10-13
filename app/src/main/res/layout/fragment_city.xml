@@ -8,27 +8,23 @@
     tools:context=".CityFragment">
 
     <ImageView
-
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/imageView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnInfo"
         app:srcCompat="@drawable/week_cloudly" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnInfo"
-        android:textColor="@color/colorPrimaryDark"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@color/colorPrimaryDark"
+        android:layout_height="@dimen/button_height"
         android:text="@string/info"
-        app:layout_constraintTop_toTopOf="@+id/imageView"
-        app:layout_constraintStart_toEndOf="@+id/imageView"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
         android:id="@+id/tvTemp"
