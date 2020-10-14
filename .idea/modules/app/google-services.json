@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "768090583256",
+    "firebase_url": "https://apt-mark-292418.firebaseio.com",
+    "project_id": "apt-mark-292418",
+    "storage_bucket": "apt-mark-292418.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768090583256:android:94081f8add3c779a5167ad",
+        "android_client_info": {
+          "package_name": "com.dmitry.pisarevskiy.abovezero"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768090583256-5ihdbcarmk2b3ur8fh2n9d6edcu53ehj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dmitry.pisarevskiy.abovezero",
+            "certificate_hash": "baf70d257f51e313744977219170e1ce1c66eac7"
+          }
+        },
+        {
+          "client_id": "768090583256-ri6pll3eko15laj9o4j8ktphce9v9lng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb3jfhlAv9c8REcrJPdxBkvPHaUuUHN28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768090583256-ri6pll3eko15laj9o4j8ktphce9v9lng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

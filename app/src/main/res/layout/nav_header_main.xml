@@ -19,7 +19,7 @@
         android:layout_height="130dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/standart_margin"
-        app:srcCompat="@drawable/week_cloudly" />
+        app:srcCompat="@drawable/icon" />
 
     <TextView
         android:layout_width="match_parent"

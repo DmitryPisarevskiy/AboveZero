@@ -20,31 +20,44 @@ public class CityFragment extends Fragment {
     private String nameOfCity;
     private float temp;
     private float speed;
+    private int sunrise;
+    private int sunset;
+    private int dt;
     private int image;
+    private int timezone;
 
     private static final String ARG_ID = "id";
     private static final String ARG_TEMP = "temp";
     private static final String ARG_NAME = "name";
     private static final String ARG_SPEED = "speed";
     private static final String ARG_CLOUDS = "clouds";
+    private static final String ARG_SUNRISE = "sunrise";
+    private static final String ARG_SUNSET = "sunset";
+    private static final String ARG_DT = "dt";
+    private static final String ARG_TIMEZONE = "timezone";
 
-    public CityFragment() {}
+    public CityFragment() {
+    }
 
-    public static CityFragment newInstance(int id, String name, float temp, float speed, int clouds) {
+    public static CityFragment newInstance(int id, String name, float temp, float speed, int clouds, int sunrise, int sunset, int dt, int timezone) {
         CityFragment fragment = new CityFragment();
         Bundle args = new Bundle();
-        args.putFloat(ARG_ID, id);
+        args.putInt(ARG_ID, id);
         args.putFloat(ARG_TEMP, temp);
         args.putString(ARG_NAME, name);
         args.putFloat(ARG_SPEED, speed);
         args.putInt(ARG_CLOUDS, clouds);
+        args.putInt(ARG_SUNRISE, sunrise);
+        args.putInt(ARG_SUNSET, sunset);
+        args.putInt(ARG_DT, dt);
+        args.putInt(ARG_TIMEZONE, timezone);
         fragment.setArguments(args);
         return fragment;
     }
 
     public int getIndex() {
         if (getArguments() != null) {
-            return getArguments().getInt(ARG_ID,0);
+            return getArguments().getInt(ARG_ID, 0);
         }
         return 0;
     }
@@ -56,6 +69,10 @@ public class CityFragment extends Fragment {
         outState.putString(ARG_NAME, nameOfCity);
         outState.putFloat(ARG_SPEED, speed);
         outState.putInt(ARG_CLOUDS, image);
+        outState.putInt(ARG_SUNRISE, sunrise);
+        outState.putInt(ARG_SUNSET, sunset);
+        outState.putInt(ARG_DT, dt);
+        outState.putInt(ARG_TIMEZONE, timezone);
         super.onSaveInstanceState(outState);
     }
 
@@ -68,6 +85,10 @@ public class CityFragment extends Fragment {
             nameOfCity = getArguments().getString(ARG_NAME);
             speed = getArguments().getFloat(ARG_SPEED);
             image = getArguments().getInt(ARG_CLOUDS);
+            sunrise = getArguments().getInt(ARG_SUNRISE);
+            sunset = getArguments().getInt(ARG_SUNSET);
+            dt = getArguments().getInt(ARG_DT);
+            timezone = getArguments().getInt(ARG_TIMEZONE);
         }
     }
 
@@ -88,15 +109,19 @@ public class CityFragment extends Fragment {
         ImageView imageView = layout.findViewById(R.id.imageView);
         TextView tvTemp = layout.findViewById(R.id.tvTemp);
         TextView tvWindSpeed = layout.findViewById(R.id.tvWindSpeed);
+        SunriseSunsetView ssvSunRiseSet = layout.findViewById(R.id.ssvSunRiseSet);
 
         imageView.setImageResource(image);
-        tvTemp.setText((String.format("%.0f",temp+MainActivity.CONSTANT_FOR_KELVIN_SCALE) + MainActivity.degreeUnit));
-        tvWindSpeed.setText((String.format("%.1f",speed*MainActivity.windMultiplier) + MainActivity.windUnit));
+        tvTemp.setText((String.format("%.0f", temp + MainActivity.CONSTANT_FOR_KELVIN_SCALE) + MainActivity.degreeUnit));
+        tvWindSpeed.setText((String.format("%.1f", speed * MainActivity.windMultiplier) + MainActivity.windUnit));
+        ssvSunRiseSet.setSunrise(sunrise + timezone);
+        ssvSunRiseSet.setSunset(sunset + timezone);
+        ssvSunRiseSet.setDt(dt + timezone);
 
         btnInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = String.format("https://yandex.ru/search/?text=%s погода на неделю", nameOfCity);
+                String url = String.format("https://yandex.ru/search/?text=%s город", nameOfCity);
                 Uri uri = Uri.parse(url);
                 Intent browser = new Intent(Intent.ACTION_VIEW, uri);
                 CityFragment.this.startActivity(browser);

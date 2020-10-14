@@ -16,7 +16,6 @@ import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
 
 public class HistoryActivity extends AppCompatActivity {
-    private final SingleTon singleTon = SingleTon.getInstance();
     private RVAdapterHistory rvAdapterHistory;
     private RecyclerView rvHistory;
     private RequestSource requestSource;
