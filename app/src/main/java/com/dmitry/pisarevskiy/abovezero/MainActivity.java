@@ -3,6 +3,8 @@ package com.dmitry.pisarevskiy.abovezero;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -28,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
     protected static final String WIND_SHOW_TAG = "Show wind";
     protected static final String PRESSURE_SHOW_TAG = "Pressure show";
     private static final int REQUEST_SETTINGS_CODE = 1;
-    private static String degreeUnit="°C";
-    private static String windUnit;
-    private static String pressureUnit;
+    protected static String degreeUnit="°C";
+    protected static String windUnit;
+    protected static String pressureUnit;
     private static boolean showWind;
     private static boolean showPressure;
     private static String activityState;
@@ -56,7 +58,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvPressure5;
     private TextView tvPressure6;
     private TextView tvPressure7;
-    private Button btnInfo;
+
+//1. Переведите ваше приложение на Фрагменты по аналогии с CityInfo.
+//2. * Приложение FragmentManager содержит ошибку, попробуйте дважды добавить один фрагмент и приложение упадет. Исправьте этот баг.
+//3. * Изучите шаблон «Наблюдатель»
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Spinner spCity = findViewById(R.id.spCity);
-        btnInfo = findViewById(R.id.btnInfo);
         tvTemp = findViewById(R.id.tvWindSpeed);
         tvTemp1 = findViewById(R.id.tvTemp1);
         tvTemp2 = findViewById(R.id.tvTemp2);
@@ -129,16 +133,6 @@ public class MainActivity extends AppCompatActivity {
         windUnit = getResources().getStringArray(R.array.wind_unit)[0];
         refresh();
 
-        btnInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String url = String.format("https://yandex.ru/search/?text=%s погода на неделю", spCity.getSelectedItem().toString());
-                Uri uri = Uri.parse(url);
-                Intent browser = new Intent(Intent.ACTION_VIEW, uri);
-                MainActivity.this.startActivity(browser);
-            }
-        });
-
         spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -150,6 +144,11 @@ public class MainActivity extends AppCompatActivity {
 //                    TextView textView = (TextView) parent.getSelectedView();
 //                    textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
 //                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    CityFragment city = CityFragment.newInstance((int)parent.getSelectedItemId(),item);
+                    ft.replace(R.id.cityFrame, city);
+                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                    ft.commit();
                 }
             }
 
@@ -160,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refresh() {
-        tvTemp.setText((getResources().getString(R.string.wind_speed_example) + " " + degreeUnit));
         tvTemp1.setText((getResources().getString(R.string.temp_example1) + " " + degreeUnit));
         tvTemp2.setText((getResources().getString(R.string.temp_example2) + " " + degreeUnit));
         tvTemp3.setText((getResources().getString(R.string.temp_example3) + " " + degreeUnit));
