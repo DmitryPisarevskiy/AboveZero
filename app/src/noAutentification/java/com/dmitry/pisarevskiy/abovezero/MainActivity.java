@@ -307,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         requestSource = new RequestSource(requestDao);
     }
 
+
     private void refresh() {
         final String item = spCity.getSelectedItem().toString();
         openWeather.loadOneCallWeather(String.valueOf(cities.get(item).getLat()),String.valueOf(cities.get(item).getLon()), API)
