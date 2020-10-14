@@ -7,6 +7,7 @@
     tools:context=".CityActivity">
 
     <TextView
+
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,8 +17,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
-        android:id="@+id/lvCities"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/rvCities"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:entries="@array/cities"
@@ -32,7 +35,7 @@
         android:inputType="textPersonName"
         android:hint="@string/enter_city"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lvCities" />
+        app:layout_constraintTop_toBottomOf="@+id/rvCities" />
 
     <Button
         android:id="@+id/btnOk"
@@ -41,24 +44,7 @@
         android:text="@string/ok"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbShowPressure"
+        app:layout_constraintTop_toBottomOf="@+id/etCity"
         app:layout_constraintWidth_percent="0.7" />
-
-    <CheckBox
-        android:id="@+id/cbShowWindSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/wind_speed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etCity" />
-
-    <CheckBox
-        android:id="@+id/cbShowPressure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pressure_show"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbShowWindSpeed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

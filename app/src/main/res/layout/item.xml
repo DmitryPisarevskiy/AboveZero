@@ -4,7 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp">
+
+    <TextView
+
+        android:id="@+id/tvTime"
+        android:layout_gravity="center"
+        android:textSize="@dimen/sizeItemList"
+        tools:text="Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/imgCloudiness"
+        android:layout_gravity="center"
+        android:layout_width="50dp"
+        tools:src="@drawable/week_cloudly"
+        android:layout_height="50dp"/>
 
     <TextView
         android:id="@+id/tvTemperature"
