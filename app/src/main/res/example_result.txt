@@ -1,0 +1,41 @@
+{
+    "coord":{
+        "lon":56.04,
+        "lat":54.77
+    },
+    "weather": [{
+        "id":803,
+        "main":"Clouds",
+        "description":"broken clouds",
+        "icon":"04n"
+    }],
+    "base":"stations",
+    "main":{
+        "temp":287.09,
+        "feels_like":284.15,
+        "temp_min":287.04,
+        "temp_max":287.15,
+        "pressure":1014,
+        "humidity":87
+    },
+    "visibility":10000,
+    "wind":{
+        "speed":5,
+        "deg":170
+    },
+    "clouds":{
+    "all":75
+    },
+    "dt":1599749703,
+    "sys":{
+        "type":1,
+        "id":9050,
+        "country":"RU",
+        "sunrise":1599701979,
+        "sunset":1599749173
+    },
+    "timezone":18000,
+    "id":479561,
+    "name":"Ufa",
+    "cod":200
+}

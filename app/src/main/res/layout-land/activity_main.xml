@@ -104,45 +104,32 @@
         app:layout_constraintTop_toBottomOf="@+id/spCity">
     </FrameLayout>
 
+<HorizontalScrollView
+    android:id="@+id/hsvData"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/standart_margin"
+    app:layout_constraintTop_toBottomOf="@+id/tvHours"
+    app:layout_constraintStart_toStartOf="parent">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tvHours"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="282dp" />
+</HorizontalScrollView>
+
 
     <FrameLayout
         android:id="@+id/flData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHours"
-        tools:layout_editor_absoluteY="480dp"
-        tools:layout_height="100dp" />
-
-    <TextView
-        android:id="@+id/tvCoordinates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/flData"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="coordinates"/>
-
-    <Button
-        android:textColor="@color/colorPrimaryDark"
-        android:id="@+id/btnKnowCurrentWeather"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/tvCoordinates"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/know_current_place_weather"/>
-
-    <FrameLayout
-        android:id="@+id/flCurrentPlaceFrame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
         tools:layout_height="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnKnowCurrentWeather">
-    </FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/hsvData"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <com.dmitry.pisarevskiy.abovezero.MySwitchView
         android:id="@+id/switchForecastHistory"
@@ -155,5 +142,6 @@
         app:main_color="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

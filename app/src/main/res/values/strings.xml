@@ -1,9 +1,16 @@
 <resources>
+    <integer-array name="clouds_image">
+        <item>@drawable/sunny</item>
+        <item>@drawable/week_rain</item>
+        <item>@drawable/week_cloudly</item>
+    </integer-array>
+    <string name = "provider_gps">GPS</string>
+    <string name="location_settings">Location settings</string>
     <string name="app_name">AboveZero</string>
     <string name="city">Salavat</string>
-    <string name="settings">Settings</string>
-    <string name="about">About</string>
-    <string name="about_text">Hello! This is a program helping to observe current weather and weather forecasts</string>
+    <string name="settings">Настройки</string>
+    <string name="about">О программе</string>
+    <string name="about_text">Данная программа разработана а учебных целях при обучении на GeekBrains.ru и предназначена для получения прогноза погоды</string>
     <string name="choose_city">Выберите город из списка или введите название нового города</string>
     <string name="choose">выбрать</string>
     <string name="wind_speed">Показывать скорость ветра</string>
@@ -13,8 +20,8 @@
     <string name="choose_mode">Выберите режим приложения</string>
     <string name="day_mode">дневной режим</string>
     <string name="night_mode">ночной режим</string>
-    <string name="wind_speed_example">5 м/с</string>
-    <string name="temp_example">23 °C</string>
+    <string name="wind_speed_example">5</string>
+    <string name="temp_example">23</string>
     <string name="hours">часы</string>
     <string name="days">дни</string>
     <string name="weeks">недели</string>
@@ -22,14 +29,66 @@
     <string name="hours_example2">17.00</string>
     <string name="hours_example3">18.00</string>
     <string name="hours_example4">19.00</string>
+    <string name="plus_button">++</string>
+    <string name="hours_example5">20.00</string>
+    <string name="hours_example6">21.00</string>
+    <string name="hours_example7">22.00</string>
+    <string name="temp_example1">15</string>
+    <string name="wind_example1">12</string>
+    <string name="wind_example2">7</string>
+    <string name="temp_example2">31</string>
+    <string name="temp_example3">17</string>
+    <string name="temp_example4">15</string>
+    <string name="temp_example5">17</string>
+    <string name="temp_example6">16</string>
+    <string name="temp_example7">17</string>
+    <string name="wind_example3">15</string>
+    <string name="wind_example4">13</string>
+    <string name="wind_example5">16</string>
+    <string name="wind_example6">17</string>
+    <string name="wind_example7">12</string>
+    <string name="pressure_example1">105</string>
+    <string name="pressure_example2">110</string>
+    <string name="pressure_example3">115</string>
+    <string name="pressure_example4">114</string>
+    <string name="pressure_example6">108</string>
+    <string name="pressure_example5">105</string>
+    <string name="pressure_example7">107</string>
+    <string name="info">инфо</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="history">история</string>
+    <string name="forecast">прогноз</string>
+    <string name="city_name">название города</string>
+    <string name="cancel">Отмена</string>
+    <string name="fail_network">Не удалось получить данные о данном городе</string>
+    <string name="incorrect_uri">Некорректный URI</string>
+    <string name="nav_header_desc">Рисунок для Drawer</string>
+    <string name="nav_header_title">AboveZero</string>
+    <string name="nav_header_subtitle">Прогноз погоды и статистика</string>
+    <string name="navigation_drawer_open">Открыть drawer</string>
+    <string name="navigation_drawer_close">Закрыть drawer</string>
+    <string name="menu_share">Поделиться</string>
+    <string name="menu_send">Отправить по почте</string>
+    <string name="communicate">Контакты</string>
+    <string name="search">Поиск</string>
+    <string name="home">Домашняя страница</string>
+    <string name="request_history">История запросов</string>
+    <string name="incorrect_name">Введно некорректное название города</string>
+    <string name="sure_before_settings">Вы уверены, что хотите применить настройки?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="add">Добавить город</string>
+    <string name="geekbrains.ru">http://geekbrains.ru</string>
+    <string name="program_image_url">https://betsydittman.com/wp-content/uploads/2015/08/Fotolia_64703455_Subscription_Monthly_M-300x300.jpg</string>
+    <string name="know_current_place_weather">Узнать погоду в текущем местонахождении</string>
     <string-array name="cities_selected">
         <item>Нурдавлетово</item>
         <item>Москва</item>
-        <item>Добавить…</item>
+        <item>Санкт-Петербург</item>
     </string-array>
     <string-array name="cities">
-        <item>Москва</item>
-        <item>Санкт-Петербург</item>
+        <item>Уфа</item>
+        <item>Самара</item>
         <item>Омск</item>
         <item>Томск</item>
         <item>Кострома</item>
@@ -39,7 +98,22 @@
         <item>км/ч</item>
     </string-array>
     <string-array name="pressure_unit">
-        <item>мм.рт.ст</item>
         <item>кПа</item>
+        <item>мм.рт.ст.</item>
+    </string-array>
+    <string-array name="cities_temp">
+        <item>25</item>
+        <item>15</item>
+        <item>-15</item>
+    </string-array>
+    <string-array name="cities_wind">
+        <item>0</item>
+        <item>15</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="cities_pressure">
+        <item>105</item>
+        <item>50</item>
+        <item>155</item>
     </string-array>
 </resources>
