@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity">
+    tools:context=".SettingsActivity"
+    android:theme="@style/SimpleText">
 
     <RadioGroup
         android:id="@+id/rgMode"
@@ -15,7 +16,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-
             android:layout_width="wrap_content"
             android:text="@string/choose_mode"
             android:textStyle="bold"
@@ -81,14 +81,26 @@
         app:layout_constraintStart_toStartOf="@+id/spWindUnit"
         app:layout_constraintTop_toBottomOf="@+id/cbShowWindSpeed" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOk"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/ok"
-        app:layout_constraintEnd_toEndOf="parent"
+        style="@style/BigWhiteTexts"
+        app:layout_constraintEnd_toStartOf="@id/btnCancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cbShowPressure"
-        app:layout_constraintWidth_percent="0.7" />
+        app:layout_constraintWidth_percent="0.4" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCancel"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btnOk"
+        app:layout_constraintTop_toBottomOf="@+id/cbShowPressure"
+        app:layout_constraintWidth_percent="0.4" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

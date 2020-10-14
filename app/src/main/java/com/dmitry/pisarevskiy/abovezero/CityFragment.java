@@ -21,7 +21,6 @@ public class CityFragment extends Fragment {
     String nameOfCity;
     private static final String ARG_INDEX = "param1";
     private static final String ARG_NAME = "param2";
-
     public CityFragment() {
 
     }
