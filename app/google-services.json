@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:768090583256:android:94081f8add3c779a5167ad",
         "android_client_info": {
-          "package_name": "com.dmitry.pisarevskiy.abovezero"
+          "package_name": "com.dmitry.pisarevskiy.abovezero.noAuth"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "768090583256-5ihdbcarmk2b3ur8fh2n9d6edcu53ehj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.dmitry.pisarevskiy.abovezero",
+            "package_name": "com.dmitry.pisarevskiy.abovezero.noAuth",
             "certificate_hash": "baf70d257f51e313744977219170e1ce1c66eac7"
           }
         },

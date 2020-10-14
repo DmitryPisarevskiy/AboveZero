@@ -284,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
-        spCity.setEnabled(false);
         switchForecastHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
