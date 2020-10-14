@@ -1,0 +1,53 @@
+{
+    "cod":"200",
+    "message":0,
+    "cnt":40,
+    "list":[{
+        "dt":1599933600,
+        "main":{
+            "temp":287.38,
+            "feels_like":284.65,
+            "temp_min":287.38,
+            "temp_max":287.99,
+            "pressure":1023,
+            "sea_level":1023,
+            "grnd_level":1007,
+            "humidity":65,
+            "temp_kf":-0.61
+        },
+        "weather":[{
+            "id":803,
+            "main":"Clouds",
+            "description":"broken clouds",
+            "icon":"04n"
+        }],
+        "clouds":{
+            "all":70
+        },
+        "wind":{
+            "speed":3.15,
+            "deg":237
+        },
+        "visibility":10000,
+        "pop":0,
+        "sys":{
+            "pod":"n"
+        },
+        "dt_txt":"2020-09-12 18:00:00"
+    },{
+        ....
+    }],
+    "city":{
+        "id":524901,
+        "name":"Moscow",
+        "coord":{
+            "lat":55.7522,
+            "lon":37.6156
+        },
+        "country":"RU",
+        "population":0,
+        "timezone":10800,
+        "sunrise":1599879366,
+        "sunset":1599926141
+    }
+}

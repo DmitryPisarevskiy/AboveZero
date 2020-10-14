@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder> {
     private List<String> times;
     private int[] images;
-    private List<String> temperatures;
-    private List<String> pressures;
-    private List<String> winds;
+    private float[] temperatures;
+    private float[] pressures;
+    private float[] winds;
 
 
     public void setTimes(List<String> times) {
@@ -27,7 +27,7 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
         notifyDataSetChanged();
     }
 
-    public RVAdapterData(List<String> times, int[] images, List<String> temperatures, List<String> pressures, List<String> winds) {
+    public RVAdapterData(List<String> times, int[] images, float[] temperatures, float[] pressures, float[] winds) {
         this.times = times;
         this.images = images;
         this.temperatures = temperatures;
@@ -35,17 +35,17 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
         this.winds = winds;
     }
 
-    public void setTemperatures(List<String> temperatures) {
+    public void setTemperatures(float[] temperatures) {
         this.temperatures = temperatures;
         notifyDataSetChanged();
     }
 
-    public void setPressures(List<String> pressures) {
+    public void setPressures(float[] pressures) {
         this.pressures = pressures;
         notifyDataSetChanged();
     }
 
-    public void setWinds(List<String> winds) {
+    public void setWinds(float[] winds) {
         this.winds = winds;
         notifyDataSetChanged();
     }
@@ -60,15 +60,15 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(times.get(position),  images[position], temperatures.get(position), winds.get(position), pressures.get(position));
+        holder.bind(times.get(position),  images[position], temperatures[position], winds[position], pressures[position]);
     }
 
     @Override
     public int getItemCount() {
         if (temperatures == null) {
             return 0;
-        };
-        return temperatures.size();
+        }
+        return temperatures.length;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -97,12 +97,12 @@ public class RVAdapterData extends RecyclerView.Adapter<RVAdapterData.ViewHolder
             }
         }
 
-        void bind(String time, int image, String temperature, String wind, String pressure) {
+        void bind(String time, int image, float temperature, float wind, float pressure) {
             tvTime.setText(time);
             imgCloudiness.setImageResource(image);
-            tvTemperature.setText((temperature + MainActivity.degreeUnit));
-            tvWind.setText((wind + MainActivity.windUnit));
-            tvPressure.setText((pressure + MainActivity.pressureUnit));
+            tvTemperature.setText((String.format("%.0f",temperature+MainActivity.CONSTANT_FOR_KELVIN_SCALE) + MainActivity.degreeUnit));
+            tvWind.setText((String.format("%.1f",wind*MainActivity.windMultiplier) + MainActivity.windUnit));
+            tvPressure.setText((String.format("%.0f",pressure*MainActivity.pressureMultiplier) + MainActivity.pressureUnit));
         }
     }
 }

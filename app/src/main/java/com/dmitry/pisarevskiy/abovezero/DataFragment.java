@@ -23,23 +23,23 @@ public class DataFragment extends Fragment {
 
     private String[] times;
     private int[] images;
-    private String[] temperatures;
-    private String[] pressures;
-    private String[] winds;
+    private float[] temperatures;
+    private float[] pressures;
+    private float[] winds;
 //    private TypedArray cloudiness;
 
     public DataFragment() {
         // Required empty public constructor
     }
 
-    public static DataFragment newInstance(String[] times, int[] images, String[] temperatures, String[] pressures, String[] winds) {
+    public static DataFragment newInstance(String[] times, int[] images, float[] temperatures, float[] pressures, float[] winds) {
         DataFragment fragment = new DataFragment();
         Bundle args = new Bundle();
         args.putStringArray(ARG_TIMES, times);
         args.putIntArray(ARG_CLOUDINESS, images);
-        args.putStringArray(ARG_TEMPERATURES, temperatures);
-        args.putStringArray(ARG_PRESSURES, pressures);
-        args.putStringArray(ARG_WINDS, winds);
+        args.putFloatArray(ARG_TEMPERATURES, temperatures);
+        args.putFloatArray(ARG_PRESSURES, pressures);
+        args.putFloatArray(ARG_WINDS, winds);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,9 +50,9 @@ public class DataFragment extends Fragment {
         if (getArguments() != null) {
             times =getArguments().getStringArray(ARG_TIMES);
             images = getArguments().getIntArray(ARG_CLOUDINESS);
-            temperatures = getArguments().getStringArray(ARG_TEMPERATURES);
-            pressures = getArguments().getStringArray(ARG_PRESSURES);
-            winds = getArguments().getStringArray(ARG_WINDS);
+            temperatures = getArguments().getFloatArray(ARG_TEMPERATURES);
+            pressures = getArguments().getFloatArray(ARG_PRESSURES);
+            winds = getArguments().getFloatArray(ARG_WINDS);
         }
     }
 
@@ -65,9 +65,9 @@ public class DataFragment extends Fragment {
         final RVAdapterData rvAdapter = new RVAdapterData(
                 Arrays.asList(times),
                 images,
-                Arrays.asList(temperatures),
-                Arrays.asList(pressures),
-                Arrays.asList(winds));
+                temperatures,
+                pressures,
+                winds);
         rvData.setAdapter(rvAdapter);
         return layout;
     }

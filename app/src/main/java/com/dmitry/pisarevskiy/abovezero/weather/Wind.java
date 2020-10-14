@@ -1,9 +1,9 @@
 package com.dmitry.pisarevskiy.abovezero.weather;
 
 public class Wind {
-    private int speed;
+    private float speed;
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
@@ -11,7 +11,7 @@ public class Wind {
         this.deg = deg;
     }
 
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 

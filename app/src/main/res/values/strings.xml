@@ -58,6 +58,8 @@
     <string name="forecast">прогноз</string>
     <string name="city_name">название города</string>
     <string name="cancel">Отмена</string>
+    <string name="fail_network">Не удалось получить данные о данном городе</string>
+    <string name="incorrect_uri">Некорректный URI</string>
     <string-array name="cities_selected">
         <item>Нурдавлетово</item>
         <item>Москва</item>
@@ -65,8 +67,8 @@
         <item>Добавить…</item>
     </string-array>
     <string-array name="cities">
-        <item>Москва</item>
-        <item>Санкт-Петербург</item>
+        <item>Уфа</item>
+        <item>Самара</item>
         <item>Омск</item>
         <item>Томск</item>
         <item>Кострома</item>
@@ -77,8 +79,7 @@
     </string-array>
     <string-array name="pressure_unit">
         <item>кПа</item>
-        <item>Бар</item>
-        <item>мм.рт.ст</item>
+        <item>мм.рт.ст.</item>
     </string-array>
     <string-array name="cities_temp">
         <item>25</item>
