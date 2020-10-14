@@ -1,6 +1,7 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,22 +17,12 @@ import androidx.annotation.NonNull;
 
 
 public class SettingsActivity extends Activity {
-    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Button btnOk = findViewById(R.id.btnOk);
-        btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        editText = findViewById(R.id.etExample);
-
         final CheckBox showWindSpeed = findViewById(R.id.cbShowWindSpeed);
         final CheckBox showPressure = findViewById(R.id.cbShowPressure);
         final Spinner windUnit = findViewById(R.id.spWindUnit);
@@ -39,6 +30,19 @@ public class SettingsActivity extends Activity {
         final RadioGroup rgMode = findViewById(R.id.rgMode);
         final RadioButton rbNightMode = findViewById(R.id.radioButton2);
         final SingleTon settings = SingleTon.getInstance();
+
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putExtra(MainActivity.PRESSURE_SHOW_TAG, showPressure.isChecked());
+                intent.putExtra(MainActivity.WIND_SHOW_TAG, showWindSpeed.isChecked());
+                intent.putExtra(MainActivity.WIND_UNIT_TAG, String.valueOf(windUnit.getSelectedItem()));
+                intent.putExtra(MainActivity.PRESSURE_UNIT_TAG, String.valueOf(pressureUnit.getSelectedItem()));
+                setResult(MainActivity.RESULT_OK, intent);
+                finish();
+            }
+        });
 
         showWindSpeed.setChecked(settings.isShowWindSpeed());
         showPressure.setChecked(settings.isShowPressure());
@@ -108,12 +112,10 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("etExample", editText.getText().toString());
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        editText.setText(savedInstanceState.getString("etExample"));
     }
 }
