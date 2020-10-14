@@ -1,5 +1,5 @@
 <resources>
-    <integer-array name="cities_image">
+    <integer-array name="clouds_image">
         <item>@drawable/sunny</item>
         <item>@drawable/week_rain</item>
         <item>@drawable/week_cloudly</item>

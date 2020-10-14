@@ -17,34 +17,46 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class CityFragment extends Fragment {
-    int currentPosition;
-    String nameOfCity;
-    private static final String ARG_INDEX = "param1";
-    private static final String ARG_NAME = "param2";
-    public CityFragment() {
+    private int id;
+    private String nameOfCity;
+    private float temp;
+    private int speed;
+    private int clouds;
 
-    }
+    private static final String ARG_ID = "id";
+    private static final String ARG_TEMP = "temp";
+    private static final String ARG_NAME = "name";
+    private static final String ARG_SPEED = "speed";
+    private static final String ARG_CLOUDS = "clouds";
 
-    public static CityFragment newInstance(int param1, String param2) {
+    public CityFragment() {}
+
+    public static CityFragment newInstance(int id, String name, float temp, int speed, int clouds) {
         CityFragment fragment = new CityFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_INDEX, param1);
-        args.putString(ARG_NAME, param2);
+        args.putFloat(ARG_ID, id);
+        args.putFloat(ARG_TEMP, temp);
+        args.putString(ARG_NAME, name);
+        args.putInt(ARG_SPEED, speed);
+        args.putInt(ARG_CLOUDS, clouds);
         fragment.setArguments(args);
         return fragment;
     }
 
     public int getIndex() {
         if (getArguments() != null) {
-            return getArguments().getInt(ARG_INDEX,0);
+            return getArguments().getInt(ARG_ID,0);
         }
         return 0;
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(ARG_INDEX, currentPosition);
+        outState.putInt(ARG_ID, id);
+        outState.putFloat(ARG_TEMP, temp);
         outState.putString(ARG_NAME, nameOfCity);
+        outState.putInt(ARG_SPEED, speed);
+        outState.putInt(ARG_CLOUDS, clouds);
         super.onSaveInstanceState(outState);
     }
 
@@ -52,8 +64,11 @@ public class CityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentPosition = getArguments().getInt(ARG_INDEX);
+            id = getArguments().getInt(ARG_ID);
+            temp = getArguments().getFloat(ARG_TEMP);
             nameOfCity = getArguments().getString(ARG_NAME);
+            speed = getArguments().getInt(ARG_SPEED);
+            clouds = getArguments().getInt(ARG_CLOUDS);
         }
     }
 
@@ -74,13 +89,16 @@ public class CityFragment extends Fragment {
         ImageView imageView = layout.findViewById(R.id.imageView);
         TextView tvTemp = layout.findViewById(R.id.tvTemp);
         TextView tvWindSpeed = layout.findViewById(R.id.tvWindSpeed);
-        TypedArray imgs = getResources().obtainTypedArray(R.array.cities_image);
-        TypedArray temps = getResources().obtainTypedArray(R.array.cities_temp);
-        TypedArray winds = getResources().obtainTypedArray(R.array.cities_wind);
 
-        imageView.setImageResource(imgs.getResourceId(getIndex(), -1));
-        tvTemp.setText((temps.getString(getIndex())+MainActivity.degreeUnit));
-        tvWindSpeed.setText((winds.getString(getIndex())+MainActivity.windUnit));
+        if (clouds<=25) {
+            imageView.setImageResource(R.drawable.sunny);
+        } else if (clouds<=50) {
+            imageView.setImageResource(R.drawable.week_cloudly);
+        } else {
+            imageView.setImageResource(R.drawable.cloudly);
+        }
+        tvTemp.setText((String.valueOf(temp)+MainActivity.degreeUnit));
+        tvWindSpeed.setText((String.valueOf(speed)+MainActivity.windUnit));
 
         btnInfo.setOnClickListener(new View.OnClickListener() {
             @Override
