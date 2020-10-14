@@ -20,6 +20,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions 'version'
+    productFlavors {
+        noAutentification {
+            dimension 'version'
+            versionNameSuffix '.noAuth'
+            applicationIdSuffix '.noAuth'
+        }
+        GoogleAutentification {
+            dimension 'version'
+            versionNameSuffix '.googleAuth'
+            applicationIdSuffix '.googleAuth'
+        }
+    }
 }
 
 dependencies {

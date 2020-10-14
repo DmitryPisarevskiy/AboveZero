@@ -1,22 +1,6 @@
 package com.dmitry.pisarevskiy.abovezero;
 
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
@@ -66,6 +50,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Переводные коэффициенты для температуры, давления
     protected static final float PRESSURE_MULTIPLIER_TO_MM_RT_ST = 760f / 1030;
@@ -109,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Для аутентификацию через Google
     private static final int RC_SIGN_IN = 40404;
     private static final String TAG = "GoogleAuth";
-    private GoogleSignInClient googleSignInClient;
-    private SignInButton sibGoogle;
     //Для статистики погоды
     private final HashMap<String, City> cities = new HashMap() {{
         put("Нурдавлетово", new City(479561, "Нурдавлетово", 55.90773f,53.383652f));
@@ -153,11 +151,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task =
-                    GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
-        }
         if (data == null || resultCode == RESULT_CANCELED) {
             return;
         }
@@ -169,21 +162,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showPressure = data.getBooleanExtra(PRESSURE_SHOW_TAG, true);
         }
         refresh();
-    }
-
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account =
-                    completedTask.getResult(ApiException.class);
-            enableGUI();
-        } catch(ApiException e) {
-           Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-        }
-    }
-
-    private void enableGUI() {
-        spCity.setEnabled(true);
-        sibGoogle.setEnabled(false);
     }
 
     private void setMultipliers() {
@@ -233,25 +211,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TAG_CODE_PERMISSION_LOCATION);
         }
         refresh();
-        // Проверка аутентификации через Google
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        googleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account!=null) {
-            enableGUI();
-        }
-    }
-
-    private void signIn() {
-        Intent signInIntent = googleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
@@ -315,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         spCity.setAdapter(spCityAdapter);
         spCityAdapter.notifyDataSetChanged();
         switchForecastHistory = findViewById(R.id.switchForecastHistory);
-        sibGoogle =findViewById(R.id.sibGoogle);
         // Установка слушателей
         spCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -344,12 +302,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         spCity.setSelection(sharedPref.getInt(SP_CITY_TAG, 0));
-        sibGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-            }
-        });
         RequestDao requestDao = App
                 .getInstance()
                 .getRequestDao();
@@ -386,8 +338,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
                             ft.commit();
                             com.dmitry.pisarevskiy.abovezero.database.Request request = new com.dmitry.pisarevskiy.abovezero.database.Request();
-                            Date date = new java.util.Date(response.body().getCurrent().getDt());
-                            SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.US);
+                            Date date = new Date(response.body().getCurrent().getDt());
+                            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.US);
                             request.date = sdf.format(date);
                             request.city = spCity.getSelectedItem().toString();
                             request.temperature = response.body().getCurrent().getTemp()+CONSTANT_FOR_KELVIN_SCALE;

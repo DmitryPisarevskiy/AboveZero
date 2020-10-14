@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary">
+    </androidx.appcompat.widget.Toolbar>
+
+    <Spinner
+        android:id="@+id/spCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:dropDownWidth="wrap_content"
+        android:entries="@array/cities_selected"
+        android:spinnerMode="dropdown"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:textSize="@dimen/sizeCaption"
+        android:text="@string/hours"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/switchForecastHistory"
+        app:layout_constraintTop_toTopOf="@+id/switchForecastHistory"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="@dimen/sizeCaption"
+        android:text="@string/days"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/switchForecastHistory"
+        app:layout_constraintTop_toTopOf="@+id/switchForecastHistory"/>
+
+
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flCityFrame" />
+
+    <FrameLayout
+        android:id="@+id/flCityFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        tools:layout_height="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spCity">
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/flData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/switchForecastHistory"
+        tools:layout_editor_absoluteY="279dp"
+        tools:layout_height="100dp" />
+
+    <com.dmitry.pisarevskiy.abovezero.MySwitchView
+        android:id="@+id/switchForecastHistory"
+        android:layout_marginTop="@dimen/standart_margin"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        app:right="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:back_color="@color/colorPrimary"
+        app:main_color="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/double_margin"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flData" />
+
+    <ScrollView
+        android:id="@+id/svDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/divider2">
+        <FrameLayout
+            android:id="@+id/flDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="279dp"
+            tools:layout_height="100dp" />
+    </ScrollView>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sibGoogle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/svDetails"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
