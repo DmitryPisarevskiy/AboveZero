@@ -7,6 +7,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
@@ -16,6 +18,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,6 +28,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkRequest;
@@ -37,35 +44,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.dmitry.pisarevskiy.abovezero.database.App;
 import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
 import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
-import com.dmitry.pisarevskiy.abovezero.weather.Request;
+import com.dmitry.pisarevskiy.abovezero.weather.Current;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherOneCall;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
 import com.dmitry.pisarevskiy.abovezero.weather.WeatherSample;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //Переводные коэффициенты для температуры, давления
     protected static final float PRESSURE_MULTIPLIER_TO_MM_RT_ST = 760f / 1030;
     protected static final float PRESSURE_MULTIPLIER_TO_KPA = 0.1f;
     protected static final float WIND_MULTIPLIER_TO_KMPH = 3600f / 1000;
     protected static final float WIND_MULTIPLIER_TO_MPS = 1;
     protected static final float CONSTANT_FOR_KELVIN_SCALE = -273.15f;
+    private static final int TAG_CODE_PERMISSION_LOCATION = 10;
+    private static final float MIN_TEMP = 10 - CONSTANT_FOR_KELVIN_SCALE ;
     protected static float pressureMultiplier;
     protected static float windMultiplier;
     //Тэги
@@ -80,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NetReceiver netReceiver = new NetReceiver();
     private BroadcastReceiver batteryReciever = new BatteryReciever();
     //Доступ к OpenWeather
+    private static final String VERY_COLD ="It is very cold today" ;
+    private final String TITLE="Warning!";
+    private LocationManager locationManager;
+    private Location location;
     private static final String API = "3f371cc26311182846ffe9eeabc50393";
     protected static final String BASE_URL = "https://api.openweathermap.org/";
     private OpenWeather openWeather;
@@ -128,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             {70, 60, 50, 40, 30, 20, 10}
     };
     private RequestSource requestSource;
+    private int messageId=3000;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -148,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.newCity:
                 String s = spCity.getSelectedItem().toString();
                 final BottomCityChoiceFragment bottomCityChoiceFragment = new BottomCityChoiceFragment();
-                bottomCityChoiceFragment.show(getSupportFragmentManager(),"dialog fragment");
+                bottomCityChoiceFragment.show(getSupportFragmentManager(), "dialog fragment");
                 break;
             default:
                 break;
@@ -202,6 +218,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initGetToken();
         initNotificationChannel();
         initRecievers();
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                    TAG_CODE_PERMISSION_LOCATION);
+        }
         // Установка настроек
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         showPressure = sharedPref.getBoolean(PRESSURE_SHOW_TAG, true);
@@ -217,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onItemSelected(final AdapterView<?> parent, final View view, int position, long id) {
                 refresh();
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
             }
@@ -233,6 +257,96 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .getInstance()
                 .getRequestDao();
         requestSource = new RequestSource(requestDao);
+    }
+
+    private void showLocation(Location l) {
+        TextView tvCoordinates = findViewById(R.id.tvCoordinates);
+        tvCoordinates.setText(String.format("Lat - %.2f, Lon - %.2f", l.getLatitude(), l.getLongitude()));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            finish();
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                1000 * 10, 10, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(@NonNull Location l) {
+                        location = l;
+                        showLocation(l);
+                    }
+                    @Override
+                    public void onProviderEnabled(@NonNull String provider) {
+                        checkEnabled();
+                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {
+                                            Manifest.permission.ACCESS_FINE_LOCATION,
+                                            Manifest.permission.ACCESS_COARSE_LOCATION },
+                                    TAG_CODE_PERMISSION_LOCATION);
+                        } else {
+                            showLocation(Objects.requireNonNull(locationManager.getLastKnownLocation(provider)));
+                        }
+                    }
+                    @Override
+                    public void onProviderDisabled(@NonNull String provider) {
+                        checkEnabled();
+                    }
+                });
+        checkEnabled();
+        Button btnCurrentPlabe = findViewById(R.id.btnKnowCurrentWeather);
+        btnCurrentPlabe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openWeather.loadOneCallWeather(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), API)
+                        .enqueue(new Callback<WeatherOneCall>() {
+                            @Override
+                            public void onResponse(Call<WeatherOneCall> call, Response<WeatherOneCall> response) {
+                                if (response.body()!=null && location!=null) {
+                                    Log.d("df",response.body().toString());
+                                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                                    CityFragment city = CityFragment.newInstance(0, spCity.getSelectedItem().toString(), response.body().getCurrent().getTemp(), response.body().getCurrent().getWind_speed(), response.body().getCurrent().getImage());
+                                    ft.replace(R.id.flCurrentPlaceFrame, city);
+                                    ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                                    ft.commit();
+                                    if (response.body().getCurrent().getTemp()< MIN_TEMP) {
+                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "2")
+                                                .setSmallIcon(R.mipmap.ic_launcher)
+                                                .setContentTitle(TITLE)
+                                                .setContentText(VERY_COLD);
+                                        NotificationManager notificationManager =
+                                                (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                                        notificationManager.notify(messageId++, builder.build());
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onFailure(Call<WeatherOneCall> call, Throwable t) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                builder.setTitle(R.string.fail_network)
+                                        .setCancelable(false)
+                                        .setIcon(R.drawable.kompas)
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                            }
+                                        });
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        });
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    private void checkEnabled() {
+        Log.d("location", String.valueOf(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)));
     }
 
     private void initRecievers() {
@@ -269,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             com.dmitry.pisarevskiy.abovezero.database.Request request = new com.dmitry.pisarevskiy.abovezero.database.Request();
                             Date date = new java.util.Date(response.body().getDt());
                             SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.US);
-                            request.date = sdf.format(date);;
+                            request.date = sdf.format(date);
                             request.city = spCity.getSelectedItem().toString();
                             request.temperature = response.body().getMain().getTemp()+CONSTANT_FOR_KELVIN_SCALE;
                             requestSource.addRequest(request);
@@ -291,9 +405,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 });
         openWeather.loadForecastWeather(citiesID.get(item),API)
-                .enqueue(new Callback<Request>() {
+                .enqueue(new Callback<WeatherRequest>() {
                     @Override
-                    public void onResponse(Call<Request> call, Response<Request> response) {
+                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
                         if (response.body()!=null) {
                             int pos = (int) spCity.getSelectedItemId() > 2 ? 0 : (int) spCity.getSelectedItemId();
                             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -309,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                     @Override
-                    public void onFailure(Call<Request> call, Throwable t) {
+                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                         builder.setTitle(R.string.fail_network)
                                 .setCancelable(false)
@@ -330,10 +444,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        ImageView imageView = navigationView.getHeaderView(0).findViewById(R.id.program_image);
-        Picasso.get()
-                .load(getString(R.string.program_image_url))
-                .into(imageView);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -390,6 +500,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
         SharedPreferences sharedPref = getPreferences(MODE_PRIVATE);
         savePreferences(sharedPref);
+        unregisterReceiver(batteryReciever);
+        unregisterReceiver(netReceiver);
     }
 
     private void savePreferences(SharedPreferences sharedPref) {

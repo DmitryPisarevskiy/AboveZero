@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Request {
+public class WeatherRequest {
     @SerializedName("list")
     @Expose
     private WeatherSample[] list;
