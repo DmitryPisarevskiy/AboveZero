@@ -4,6 +4,8 @@
         <item>@drawable/week_rain</item>
         <item>@drawable/week_cloudly</item>
     </integer-array>
+    <string name = "provider_gps">GPS</string>
+    <string name="location_settings">Location settings</string>
     <string name="app_name">AboveZero</string>
     <string name="city">Salavat</string>
     <string name="settings">Настройки</string>
@@ -78,6 +80,7 @@
     <string name="add">Добавить город</string>
     <string name="geekbrains.ru">http://geekbrains.ru</string>
     <string name="program_image_url">https://betsydittman.com/wp-content/uploads/2015/08/Fotolia_64703455_Subscription_Monthly_M-300x300.jpg</string>
+    <string name="know_current_place_weather">Узнать погоду в текущем местонахождении</string>
     <string-array name="cities_selected">
         <item>Нурдавлетово</item>
         <item>Москва</item>

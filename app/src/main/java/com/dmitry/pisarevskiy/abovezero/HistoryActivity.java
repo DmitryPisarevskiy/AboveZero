@@ -11,13 +11,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.Arrays;
-import java.util.zip.Inflater;
+import com.dmitry.pisarevskiy.abovezero.database.App;
+import com.dmitry.pisarevskiy.abovezero.database.RequestDao;
+import com.dmitry.pisarevskiy.abovezero.database.RequestSource;
 
 public class HistoryActivity extends AppCompatActivity {
     private final SingleTon singleTon = SingleTon.getInstance();
     private RVAdapterHistory rvAdapterHistory;
     private RecyclerView rvHistory;
+    private RequestSource requestSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +29,13 @@ public class HistoryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         rvHistory =findViewById(R.id.rvHistory);
         rvHistory.setLayoutManager(new LinearLayoutManager(this));
-        rvAdapterHistory = new RVAdapterHistory(singleTon.getHistory());
+        RequestDao requestDao = App
+                .getInstance()
+                .getRequestDao();
+        requestSource = new RequestSource(requestDao);
+        rvAdapterHistory = new RVAdapterHistory(requestSource.getRequests());
         rvHistory.setAdapter(rvAdapterHistory);
+
     }
 
     @Override

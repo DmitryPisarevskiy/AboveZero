@@ -9,8 +9,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-public class ForecastWeather {
+public class WeatherRequest {
     @SerializedName("list")
     @Expose
     private WeatherSample[] list;
@@ -73,7 +74,7 @@ public class ForecastWeather {
         String[] arr = new String[numOfData];
         for (int i = 0; i < numOfData; i++) {
             Date date = new java.util.Date((getList()[i].getDt() + city.getTimezone())*1000L);
-            SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm");
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", Locale.US);
             arr[i]=sdf.format(date);
         }
         return arr;

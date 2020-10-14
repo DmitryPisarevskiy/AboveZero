@@ -1,6 +1,6 @@
 package com.dmitry.pisarevskiy.abovezero;
 
-import com.dmitry.pisarevskiy.abovezero.weather.ForecastWeather;
+import com.dmitry.pisarevskiy.abovezero.weather.WeatherRequest;
 
 import java.util.ArrayList;
 
@@ -12,13 +12,13 @@ public final class SingleTon {
     private boolean nightMode;
     private int pressureUnit;
     private int windSpeedUnit;
-    private ArrayList<ForecastWeather> history;
+    private ArrayList<WeatherRequest> history;
 
-    public ArrayList<ForecastWeather> getHistory() {
+    public ArrayList<WeatherRequest> getHistory() {
         return history;
     }
 
-    public void setHistory(ArrayList<ForecastWeather> history) {
+    public void setHistory(ArrayList<WeatherRequest> history) {
         this.history = history;
     }
 
